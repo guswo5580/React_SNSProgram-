@@ -12,23 +12,24 @@ import { Form, Input, Checkbox, Button } from "antd";
 //     로 표현 후 form 안에 삽입
 // };
 
+//기본 Form 커스텀 훅
 export const useInput = (initValue = null) => {
   const [value, setter] = useState(initValue);
   //자식으로 넘겨주는 이벤트에는 useCallback을 붙여 리렌더링 방지
   const handler = useCallback(e => {
+    //useCallback - memo와 같이 컴포넌트의 rerendering 영역을 최소로 설정
     setter(e.target.value);
   }, []);
   return [value, handler];
 }; //모듈화로 재사용
 
 const Signup = () => {
-  //기본 Form 커스텀 훅
-
   // e.target.value로 전달 받는 커스텀 훅 이용 state
   const [id, onChangeId] = useInput("");
   const [nick, onChangeNick] = useInput("");
   const [password, onChangePassword] = useInput("");
-  //////////////////////////
+
+  ////////////커스텀 훅으로 묶을 수 없는 나머지 영역은 useState로 선언//////////////
   const [passwordCheck, setPasswordCheck] = useState("");
   const [term, setTerm] = useState(false);
   const [passwordError, setPasswordError] = useState(false);
@@ -44,6 +45,7 @@ const Signup = () => {
     [password, passwordCheck, term]
   );
   //state 붙여 해당 state가 바뀔 때 rerendering
+  //내부에서 state에 대해 이용을 하면 rerendering 할 수 있게 붙여주어야 한다
 
   const onChangePasswordCheck = useCallback(
     e => {

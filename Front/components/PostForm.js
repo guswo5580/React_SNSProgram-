@@ -17,6 +17,7 @@ const dummy = {
   ]
 };
 
+//게시글 업로드 부분
 const PostForm = () => {
   return (
     <Form style={{ margin: "10px 0 20px" }} encType="multipart/form-data">

@@ -3,9 +3,12 @@
 import React from "react";
 import Head from "next/head";
 import PropTypes from "prop-types";
+
+//Component import
 import AppLayout from "../components/AppLayout";
 
 const PeaceOcean = ({ Component }) => {
+  //Component를 props로 전달
   return (
     <>
       <Head>
@@ -17,7 +20,8 @@ const PeaceOcean = ({ Component }) => {
         <script src="https://cdnjs.cloudflare.com/ajax/libs/antd/3.16.2/antd.js" />
       </Head>
       <AppLayout>
-        {/* next 에서 넣어주는 props */}
+        {/* next 에서 넣어주는 props 
+        Head부분이 Component에 포함되어 AppLayout에 전달됨을 의미*/}
         <Component />
       </AppLayout>
     </>

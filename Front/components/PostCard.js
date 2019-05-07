@@ -2,6 +2,8 @@ import React from "react";
 import { Card, Icon, Button, Avatar } from "antd";
 import PropTypes from "prop-types";
 
+//게시글 부분
+//<PostCard key={c} post={c} />;
 const PostCard = ({ post }) => {
   return (
     <Card
@@ -24,6 +26,7 @@ const PostCard = ({ post }) => {
   );
 };
 
+//PropType을 Object 변수에 이용할 때
 PostCard.propTypes = {
   post: PropTypes.shape({
     User: PropTypes.object,

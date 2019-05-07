@@ -1,7 +1,9 @@
 import React from "react";
-import Link from "next/link";
+import Link from "next/link"; //Router 로 전환되는 것을 next/link를 통해 설정
 import PropTypes from "prop-types";
 import { Col, Input, Menu, Row } from "antd";
+
+//Component import
 import LoginForm from "./LoginForm";
 import UserProfile from "./UserProfile";
 
@@ -33,10 +35,13 @@ const AppLayout = ({ children }) => {
       </Menu>
       <Row gutter={8}>
         <Col xs={24} md={6}>
+          {/* 로그인 여부에 따라 컴포넌트를 다르게!!  */}
           {dummy.isLoggedIn ? <UserProfile /> : <LoginForm />}
         </Col>
         <Col xs={24} md={12}>
           {children}
+          {/* children으로 선언된 부분에서만 import된 해당 컴포넌트의 내용을 담고, 
+          다른 부분은 AppLayout의 형태를 그대로 유지 */}
         </Col>
         <Col xs={24} md={6}>
           <Link href="http://peaceocean.cf">

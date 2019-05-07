@@ -1,5 +1,5 @@
-import { Avatar, Card } from "antd";
 import React from "react";
+import { Avatar, Card } from "antd";
 
 const dummy = {
   nickname: "현재",
