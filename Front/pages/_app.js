@@ -7,11 +7,12 @@ import PropTypes from "prop-types";
 //Component import
 import AppLayout from "../components/AppLayout";
 
-//Redex import
+//Redux import
 import { Provider } from "react-redux";
 import reducer from "../reducers";
 import withRedux from "next-redux-wrapper"; //props로 store을 넣어주는 것을 선언
-import { createStore } from "redux";
+import { createStore, compose, applyMiddleware } from "redux";
+//using Redux middleware
 
 const PeaceOcean = ({ Component, store }) => {
   //Component를 props로 전달
@@ -39,9 +40,17 @@ PeaceOcean.propTypes = {
 };
 
 export default withRedux((initialState, options) => {
-  const store = createStore(reducer, initialState);
+  //커스터 마이징을 삽입 가능
+  //middleware 는 action과 store 사이에서 동작
+  const middlewares = []; //미들웨어 삽입구간
+  const enhancer = compose(
+    //미들웨어 합침
+    applyMiddleware(...middlewares), //미들웨어 적용
+    !options.isServer && window.__REDUX_DEVTOOLS_EXTENSION__ !== "undefined"
+      ? window.__REDUX_DEVTOOLS_EXTENSION__() //DevTools에 적용
+      : f => f
+  );
+  const store = createStore(reducer, initialState, enhancer);
   //store = state + reducer 인 것으로 선언 & 붙임
-
-  //store 커스터 마이징을 삽입 가능
   return store;
 })(PeaceOcean);

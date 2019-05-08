@@ -7,15 +7,10 @@ import { Col, Input, Menu, Row } from "antd";
 import LoginForm from "./LoginForm";
 import UserProfile from "./UserProfile";
 
-const dummy = {
-  nickname: "현재",
-  Post: [],
-  Followers: [],
-  Followings: [],
-  isLoggedIn: false
-}; //임시 데이터
+import { useSelector } from "react-redux";
 
 const AppLayout = ({ children }) => {
+  const { isLoggedIn } = useSelector(state => state.user);
   return (
     <div>
       <Menu mode="horizontal">
@@ -36,7 +31,7 @@ const AppLayout = ({ children }) => {
       <Row gutter={8}>
         <Col xs={24} md={6}>
           {/* 로그인 여부에 따라 컴포넌트를 다르게!!  */}
-          {dummy.isLoggedIn ? <UserProfile /> : <LoginForm />}
+          {isLoggedIn ? <UserProfile /> : <LoginForm />}
         </Col>
         <Col xs={24} md={12}>
           {children}

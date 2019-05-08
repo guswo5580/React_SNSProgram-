@@ -1,5 +1,7 @@
 import React, { useState, useCallback } from "react";
 import { Form, Input, Checkbox, Button } from "antd";
+import { useDispatch } from "react-redux";
+import { signUpAction } from "../reducers/user";
 
 //onChange 부분에 useCallback을 사용했어도
 //id input 에서 작성 -> 전체 form이 rerendering
@@ -35,12 +37,21 @@ const Signup = () => {
   const [passwordError, setPasswordError] = useState(false);
   const [termError, setTermError] = useState(false);
 
+  const dispatch = useDispatch();
+
   const onSubmit = useCallback(
     e => {
       e.preventDefault();
       if (password !== passwordCheck) return setPasswordError(true);
 
       if (!term) return setTermError(true);
+      dispatch(
+        signUpAction({
+          id,
+          password,
+          nick
+        })
+      );
     },
     [password, passwordCheck, term]
   );

@@ -4,6 +4,10 @@ import Link from "next/link";
 
 import { useInput } from "../pages/signup"; //custom hook
 
+//import redux
+import { useDispatch } from "react-redux";
+import { loginAction } from "../reducers/user";
+
 const LoginForm = () => {
   // export const useInput = (initValue = null) => {
   //   const [value, setter] = useState(initValue);
@@ -14,14 +18,12 @@ const LoginForm = () => {
   // };
   const [id, onChangeId] = useInput("");
   const [password, onChangePassword] = useInput("");
+  const dispatch = useDispatch();
 
   const onSubmitForm = useCallback(
     e => {
       e.preventDefault();
-      console.log({
-        id,
-        password
-      });
+      dispatch(loginAction);
     },
     [id, password]
   );

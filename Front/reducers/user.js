@@ -1,19 +1,32 @@
+const dummyUser = {
+  //로그인 action이 되었을 때, initialState에 들어갈 user
+  nickname: "현재",
+  Post: [],
+  Followers: [],
+  Followings: [],
+  signUPData: {}
+};
 export const initialState = {
   isLoggedIn: false,
-  user: {}
+  user: null
 };
 
 export const LOG_IN = "LOG_IN"; //ACTION 이름
 export const LOG_OUT = "LOG_OUT";
+export const SIGN_UP = "SIGN_UP";
 
-const loginAction = {
-  type: LOG_IN,
-  data: {
-    nickname: "현재"
-  }
+export const loginAction = {
+  type: LOG_IN
 };
-const logoutAction = {
+export const logoutAction = {
   type: LOG_OUT
+};
+//동적 Data에 따라 달라지는 부분은 함수로 action을 선언
+export const signUpAction = data => {
+  return {
+    type: SIGN_UP,
+    data: data
+  };
 };
 
 const reducer = (state = initialState, action) => {
@@ -22,7 +35,7 @@ const reducer = (state = initialState, action) => {
       return {
         ...state,
         isLoggedIn: true,
-        user: action.data
+        user: dummyUser
       };
     }
     case LOG_OUT: {
@@ -30,6 +43,12 @@ const reducer = (state = initialState, action) => {
         ...state,
         isLoggedIn: false,
         user: null
+      };
+    }
+    case SIGN_UP: {
+      return {
+        ...state,
+        signUPData: action.data
       };
     }
     default: {

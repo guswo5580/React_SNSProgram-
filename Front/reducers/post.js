@@ -1,14 +1,25 @@
 export const initialState = {
-  mainPost: []
+  mainPost: [
+    {
+      User: {
+        id: 1,
+        nickname: "현재"
+      },
+      content: "첫 번째 게시글",
+      img:
+        "https://bookthumb-phinf.pstatic.net/cover/137/995/13799585.jpg?udate=20180726",
+      imagePath: []
+    }
+  ]
 };
 
 export const ADD_POST = "ADD_POST";
 export const ADD_DUMMY = "ADD_DUMMY";
 
-const addPost = {
+export const addPost = {
   type: ADD_POST
 };
-const addDummy = {
+export const addDummy = {
   type: ADD_DUMMY,
   data: {
     content: "Hello",
