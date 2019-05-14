@@ -13,6 +13,8 @@ import reducer from "../reducers";
 import withRedux from "next-redux-wrapper"; //props로 store을 넣어주는 것을 선언
 import { createStore, compose, applyMiddleware } from "redux";
 //using Redux middleware
+import sagaMiddleware from "../sagas/middleware";
+import rootSaga from "../sagas/index";
 
 const PeaceOcean = ({ Component, store }) => {
   //Component를 props로 전달
@@ -42,15 +44,22 @@ PeaceOcean.propTypes = {
 export default withRedux((initialState, options) => {
   //커스터 마이징을 삽입 가능
   //middleware 는 action과 store 사이에서 동작
-  const middlewares = []; //미들웨어 삽입구간
-  const enhancer = compose(
-    //미들웨어 합침
-    applyMiddleware(...middlewares), //미들웨어 적용
-    !options.isServer && window.__REDUX_DEVTOOLS_EXTENSION__ !== "undefined"
-      ? window.__REDUX_DEVTOOLS_EXTENSION__() //DevTools에 적용
-      : f => f
-  );
+  const middlewares = [sagaMiddleware]; //미들웨어 삽입구간
+
+  const enhancer =
+    process.env.NODE_ENV === "production" //미들웨어 합침
+      ? compose(applyMiddleware(...middlewares)) //미들웨어 적용
+      : compose(
+          applyMiddleware(...middlewares),
+          !options.isServer &&
+            window.__REDUX_DEVTOOLS_EXTENSION__ !== "undefined"
+            ? window.__REDUX_DEVTOOLS_EXTENSION__()
+            : f => f //DevTools에 적용, 배포시 삭제
+        );
   const store = createStore(reducer, initialState, enhancer);
   //store = state + reducer 인 것으로 선언 & 붙임
+  sagaMiddleware.run(rootSaga);
+  //생성한 saga미들웨어를 rootSaga를 통해 run
+
   return store;
-})(PeaceOcean);
+});

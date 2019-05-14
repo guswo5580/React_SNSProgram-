@@ -8,7 +8,9 @@ const dummyUser = {
 };
 export const initialState = {
   isLoggedIn: false,
-  user: null
+  user: null,
+  signUpData: {},
+  loginData: {}
 };
 
 export const LOG_IN = "LOG_IN"; //ACTION 이름
