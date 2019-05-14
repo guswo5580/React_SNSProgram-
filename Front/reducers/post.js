@@ -1,5 +1,5 @@
 export const initialState = {
-  mainPost: [
+  mainPosts: [
     {
       User: {
         id: 1,
@@ -7,10 +7,10 @@ export const initialState = {
       },
       content: "첫 번째 게시글",
       img:
-        "https://bookthumb-phinf.pstatic.net/cover/137/995/13799585.jpg?udate=20180726",
-      imagePath: []
+        "https://bookthumb-phinf.pstatic.net/cover/137/995/13799585.jpg?udate=20180726"
     }
-  ]
+  ],
+  imagePaths: []
 };
 
 export const ADD_POST = "ADD_POST";

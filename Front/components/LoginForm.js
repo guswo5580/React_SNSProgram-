@@ -18,12 +18,13 @@ const LoginForm = () => {
   // };
   const [id, onChangeId] = useInput("");
   const [password, onChangePassword] = useInput("");
+
   const dispatch = useDispatch();
 
   const onSubmitForm = useCallback(
     e => {
       e.preventDefault();
-      dispatch(loginAction);
+      dispatch(loginAction); //loginAction action을 dispatch
     },
     [id, password]
   );

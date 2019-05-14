@@ -1,5 +1,3 @@
-//next 의 layout 설정 파일 (_app.js로 명명)
-//전체에 공통적으로 들어갈 내용들에 대해서 작성
 import React from "react";
 import Head from "next/head";
 import PropTypes from "prop-types";
@@ -28,9 +26,9 @@ const PeaceOcean = ({ Component, store }) => {
         />
         <script src="https://cdnjs.cloudflare.com/ajax/libs/antd/3.16.2/antd.js" />
       </Head>
-      <AppLayout>
-        {/* next 에서 넣어주는 props 
+      {/* next 에서 넣어주는 props 
         Head부분이 Component에 포함되어 AppLayout에 전달됨을 의미*/}
+      <AppLayout>
         <Component />
       </AppLayout>
     </Provider>
@@ -38,12 +36,16 @@ const PeaceOcean = ({ Component, store }) => {
 };
 PeaceOcean.propTypes = {
   Component: PropTypes.elementType, //jsx형식의 Component를 전달하는 경우
-  store: PropTypes.opject
+  store: PropTypes.object
 };
 
+//미들웨어 생성 예시
+// const middleware = store => next => action => {
+//   console.log(action); // 다른 작업들을 여기에
+//   next(action);
+// };
+
 export default withRedux((initialState, options) => {
-  //커스터 마이징을 삽입 가능
-  //middleware 는 action과 store 사이에서 동작
   const middlewares = [sagaMiddleware]; //미들웨어 삽입구간
 
   const enhancer =
@@ -62,4 +64,4 @@ export default withRedux((initialState, options) => {
   //생성한 saga미들웨어를 rootSaga를 통해 run
 
   return store;
-});
+})(PeaceOcean);

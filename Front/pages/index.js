@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { useSelector } from "react-redux";
 
 //component import
@@ -7,7 +7,7 @@ import PostCard from "../components/PostCard";
 
 const Home = () => {
   //리렌더링의 효율에 따라 selector를 세분화하여 나누어 주는 것이 좋다
-  const isLoggedIn = useSelector(state => state.user);
+  const { isLoggedIn } = useSelector(state => state.user);
   const { mainPosts } = useSelector(state => state.post);
 
   return (
