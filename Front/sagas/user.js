@@ -11,17 +11,22 @@ import {
 import {
   LOG_IN_REQUEST,
   LOG_IN_SUCCESS,
-  LOG_IN_FAILURE
+  LOG_IN_FAILURE,
+  SIGN_UP_REQUEST,
+  SIGN_UP_SUCCESS,
+  SIGN_UP_FAILURE
 } from "../reducers/user";
+import axios from "axios";
 
 function loginAPI() {
   // 서버에 요청을 보내는 부분
-  //return axios.post("/login");
+  return axios.post("/login");
 }
 
 function* login() {
   try {
-    yield call(loginAPI);
+    // yield call(loginAPI); //call = 동기적 실행
+    yield delay(2000);
     yield put({
       //put = dispatch --- loginAPI 성공 시 실행
       type: LOG_IN_SUCCESS
@@ -34,9 +39,37 @@ function* login() {
     });
   }
 }
-
 function* watchLogin() {
   yield takeEvery(LOG_IN_REQUEST, login);
+}
+////////////////////////////////////////////////////////
+
+function signUpAPI() {
+  return axios.post("/login");
+}
+
+function* signUp() {
+  try {
+    // yield call(signUpAPI); //call = 동기적 실행
+    yield delay(2000);
+    throw new Error("Making Error");
+
+    // eslint-disable-next-line no-unreachable
+    yield put({
+      //put = dispatch --- loginAPI 성공 시 실행
+      type: SIGN_UP_SUCCESS
+    });
+  } catch (error) {
+    //loginAPI 실패 시 실행
+    console.log(error);
+    yield put({
+      type: SIGN_UP_FAILURE,
+      error
+    });
+  }
+}
+function* watchSignUp() {
+  yield takeEvery(SIGN_UP_REQUEST, signUp);
 }
 
 // while (true) {
@@ -50,5 +83,6 @@ function* watchLogin() {
 //}
 
 export default function* userSaga() {
-  yield all([fork(watchLogin)]); //all = 여러 개의 eventlistener을 이용 시, all
+  yield all([fork(watchLogin), fork(watchSignUp)]); //all = 여러 개의 eventlistener을 이용 시, all
+  //fork = 비동기적 실행
 }

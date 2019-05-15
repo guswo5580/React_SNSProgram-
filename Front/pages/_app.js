@@ -13,6 +13,7 @@ import { createStore, compose, applyMiddleware } from "redux";
 //using Redux middleware
 import sagaMiddleware from "../sagas/middleware";
 import rootSaga from "../sagas/index";
+import createSagaMiddleware from "redux-saga";
 
 const PeaceOcean = ({ Component, store }) => {
   //Component를 props로 전달
@@ -35,8 +36,8 @@ const PeaceOcean = ({ Component, store }) => {
   );
 };
 PeaceOcean.propTypes = {
-  Component: PropTypes.elementType, //jsx형식의 Component를 전달하는 경우
-  store: PropTypes.object
+  Component: PropTypes.elementType.isRequired, //jsx형식의 Component를 전달하는 경우
+  store: PropTypes.object.isRequired
 };
 
 //미들웨어 생성 예시
@@ -45,9 +46,9 @@ PeaceOcean.propTypes = {
 //   next(action);
 // };
 
-export default withRedux((initialState, options) => {
+const configureStore = (initialState, options) => {
+  const sagaMiddleware = createSagaMiddleware();
   const middlewares = [sagaMiddleware]; //미들웨어 삽입구간
-
   const enhancer =
     process.env.NODE_ENV === "production" //미들웨어 합침
       ? compose(applyMiddleware(...middlewares)) //미들웨어 적용
@@ -64,4 +65,6 @@ export default withRedux((initialState, options) => {
   //생성한 saga미들웨어를 rootSaga를 통해 run
 
   return store;
-})(PeaceOcean);
+};
+
+export default withRedux(configureStore)(PeaceOcean);
