@@ -45,6 +45,7 @@ const Signup = () => {
     if (me) {
       alert("메인화면으로 이동합니다");
       Router.push("/");
+      //Link를 이용하는 것과 같은 효과
     }
   }, [me && me.id]);
   //useEffect의 변화 state로 객체를 비교하는 것은 부적절

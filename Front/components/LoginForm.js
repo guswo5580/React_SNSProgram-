@@ -1,30 +1,27 @@
 import React, { useCallback } from "react";
-import { Form, Input, Button } from "antd";
+import { Button, Form, Input } from "antd";
 import Link from "next/link";
-
-import { useInput } from "../pages/signup"; //custom hook
-
-//import redux
-import { useDispatch } from "react-redux";
-import { loginAction } from "../reducers/user";
+import { useDispatch, useSelector } from "react-redux";
+import { useInput } from "../pages/signup";
+import { LOG_IN_REQUEST } from "../reducers/user";
 
 const LoginForm = () => {
-  // export const useInput = (initValue = null) => {
-  //   const [value, setter] = useState(initValue);
-  //   const handler = useCallback(e => {
-  //     setter(e.target.value);
-  //   }, []);
-  //   return [value, handler];
-  // };
   const [id, onChangeId] = useInput("");
   const [password, onChangePassword] = useInput("");
 
   const dispatch = useDispatch();
+  const { isLogginIn } = useSelector(state => state.user);
 
   const onSubmitForm = useCallback(
     e => {
       e.preventDefault();
-      dispatch(loginAction); //loginAction action을 dispatch
+      dispatch({
+        type: LOG_IN_REQUEST,
+        data: {
+          id,
+          password
+        }
+      });
     },
     [id, password]
   );
@@ -48,7 +45,7 @@ const LoginForm = () => {
         />
       </div>
       <div style={{ marginTop: "10px" }}>
-        <Button type="primary" htmlType="submit" loading={false}>
+        <Button type="primary" htmlType="submit" loading={isLogginIn}>
           로그인
         </Button>
         <Link href="/signup">

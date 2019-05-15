@@ -35,7 +35,7 @@ function* addComment(action) {
     yield put({
       type: ADD_COMMENT_SUCCESS,
       data: {
-        postId: action.data.postId
+        postId: action.data.postId //Post 시 넘겨준 게시글 id 정보
       }
     });
   } catch (error) {
