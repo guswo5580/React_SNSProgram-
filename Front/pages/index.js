@@ -1,6 +1,5 @@
 import React from "react";
 import { useSelector } from "react-redux";
-
 //component import
 import PostForm from "../components/PostForm";
 import PostCard from "../components/PostCard";

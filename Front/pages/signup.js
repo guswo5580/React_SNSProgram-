@@ -1,8 +1,8 @@
-import React, { useState, useCallback } from "react";
-import { Form, Input, Checkbox, Button } from "antd";
+import React, { useCallback, useState, useEffect } from "react";
+import { Button, Checkbox, Form, Input } from "antd";
 import { useDispatch, useSelector } from "react-redux";
-import { SIGN_UP_REQUEST } from "../reducers/user";
 import Router from "next/router";
+import { SIGN_UP_REQUEST } from "../reducers/user";
 
 //onChange 부분에 useCallback을 사용했어도
 //id input 에서 작성 -> 전체 form이 rerendering
@@ -39,6 +39,16 @@ const Signup = () => {
   const [termError, setTermError] = useState(false);
 
   const dispatch = useDispatch();
+  const { isSigningUp, me } = useSelector(state => state.user);
+
+  useEffect(() => {
+    if (me) {
+      alert("메인화면으로 이동합니다");
+      Router.push("/");
+    }
+  }, [me && me.id]);
+  //useEffect의 변화 state로 객체를 비교하는 것은 부적절
+  //객체 여부와 객체 내부 내용으로 Effect 타이밍 잡기
 
   const onSubmit = useCallback(
     e => {
@@ -46,13 +56,16 @@ const Signup = () => {
       if (password !== passwordCheck) return setPasswordError(true);
 
       if (!term) return setTermError(true);
-      dispatch(
-        signUpAction({
+
+      //회원가입 요청 시 action을 dispatch
+      return dispatch({
+        type: SIGN_UP_REQUEST,
+        data: {
           id,
           password,
           nick
-        })
-      );
+        }
+      });
     },
     [password, passwordCheck, term]
   );
@@ -121,7 +134,7 @@ const Signup = () => {
           {termError && <div style={{ color: "red" }}>동의하셔야 합니다</div>}
         </div>
         <div style={{ marginTop: 10 }}>
-          <Button type="primary" htmlType="submit">
+          <Button type="primary" htmlType="submit" loading={isSigningUp}>
             가입하기
           </Button>
         </div>

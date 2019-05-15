@@ -1,19 +1,14 @@
 import React from "react";
 import Head from "next/head";
 import PropTypes from "prop-types";
-
-//Component import
-import AppLayout from "../components/AppLayout";
-
-//Redux import
+import withRedux from "next-redux-wrapper";
+import { applyMiddleware, compose, createStore } from "redux";
 import { Provider } from "react-redux";
-import reducer from "../reducers";
-import withRedux from "next-redux-wrapper"; //props로 store을 넣어주는 것을 선언
-import { createStore, compose, applyMiddleware } from "redux";
-//using Redux middleware
-import sagaMiddleware from "../sagas/middleware";
-import rootSaga from "../sagas/index";
 import createSagaMiddleware from "redux-saga";
+
+import AppLayout from "../components/AppLayout";
+import reducer from "../reducers";
+import rootSaga from "../sagas";
 
 const PeaceOcean = ({ Component, store }) => {
   //Component를 props로 전달
@@ -63,7 +58,6 @@ const configureStore = (initialState, options) => {
   //store = state + reducer 인 것으로 선언 & 붙임
   sagaMiddleware.run(rootSaga);
   //생성한 saga미들웨어를 rootSaga를 통해 run
-
   return store;
 };
 
