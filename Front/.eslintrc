@@ -18,5 +18,8 @@
     "plugins": [
         "import",
         "react-hooks"
-    ]
+    ],
+    "rules": {
+        "prettier/prettier": "error"
+    }
 }
