@@ -5,7 +5,7 @@ const db = require('../models');
 
 const router = express.Router();
 
-router.get('/', (req, res) => { // /api/user/
+router.get('/', (req, res) => { //로그인 시 자동으로 내 정보 가져오기
   if (!req.user) {
     return res.status(401).send('로그인이 필요합니다.');
   }

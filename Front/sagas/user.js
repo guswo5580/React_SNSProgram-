@@ -14,7 +14,13 @@ import {
   LOG_IN_FAILURE,
   SIGN_UP_REQUEST,
   SIGN_UP_SUCCESS,
-  SIGN_UP_FAILURE
+  SIGN_UP_FAILURE,
+  LOG_OUT_REQUEST,
+  LOG_OUT_SUCCESS,
+  LOG_OUT_FAILURE,
+  LOAD_USER_REQUEST,
+  LOAD_USER_SUCCESS,
+  LOAD_USER_FAILURE
 } from "../reducers/user";
 import axios from "axios";
 import Router from "next/router";
@@ -45,11 +51,10 @@ function* login(action) {
     });
   }
 }
-function* watchLogin() {
+function* watchLogIn() {
   yield takeEvery(LOG_IN_REQUEST, login);
 }
 ////////////////////////////////////////////////////////
-
 function signUpAPI(signUpData) {
   return axios.post("/user", signUpData);
 }
@@ -78,6 +83,72 @@ function* watchSignUp() {
   yield takeEvery(SIGN_UP_REQUEST, signUp);
 }
 
+////////////////////////////////////////////////
+function logOutAPI() {
+  return axios.post("/user/logout", {}, { withCredentials: true });
+  //logout은 보낼 데이터가 없지만 빈 객체라도 넣어줄 것 (POST 시)
+}
+
+function* logOut() {
+  try {
+    // yield call(logOutAPI);
+    yield call(logOutAPI);
+    yield put({
+      // put은 dispatch 동일
+      type: LOG_OUT_SUCCESS
+    });
+  } catch (e) {
+    // loginAPI 실패
+    console.error(e);
+    yield put({
+      type: LOG_OUT_FAILURE,
+      error: e
+    });
+  }
+}
+
+function* watchLogOut() {
+  yield takeEvery(LOG_OUT_REQUEST, logOut);
+}
+
+///////////////////////////////////////
+function loadUserAPI() {
+  return axios.get("/user/", { withCredentials: true });
+  //쿠키가 있으면 쿠키를 이용하여 요청
+}
+
+function* loadUser() {
+  try {
+    // yield call(loadUserAPI);
+    const result = yield call(loadUserAPI);
+    yield put({
+      // put은 dispatch 동일
+      type: LOAD_USER_SUCCESS,
+      data: result.data
+    });
+  } catch (e) {
+    // loginAPI 실패
+    console.error(e);
+    yield put({
+      type: LOAD_USER_FAILURE,
+      error: e
+    });
+  }
+}
+
+function* watchLoadUser() {
+  yield takeEvery(LOAD_USER_REQUEST, loadUser);
+}
+
+export default function* userSaga() {
+  yield all([
+    fork(watchLogIn),
+    fork(watchLogOut),
+    fork(watchLoadUser),
+    fork(watchSignUp)
+  ]);
+}
+
 // while (true) {
 //   //take만 사용할 때는 while true로 감싸주기
 //   yield take(LOG_IN); //LOG_IN action을 기다림
@@ -87,8 +158,3 @@ function* watchSignUp() {
 //     type: LOG_IN_SUCCESS
 //   });
 //}
-
-export default function* userSaga() {
-  yield all([fork(watchLogin), fork(watchSignUp)]); //all = 여러 개의 eventlistener을 이용 시, all
-  //fork = 비동기적 실행
-}
