@@ -17,12 +17,15 @@ import {
   SIGN_UP_FAILURE
 } from "../reducers/user";
 import axios from "axios";
+import Router from "next/router";
 
 axios.defaults.baseURL = "http://localhost:3065/api";
 
 function loginAPI(loginData) {
   // 서버에 요청을 보내는 부분
-  return axios.post("/user/login", loginData);
+  return axios.post("/user/login", loginData, {
+    withCredentials: true
+  });
 }
 
 function* login(action) {
@@ -34,6 +37,8 @@ function* login(action) {
       type: LOG_IN_SUCCESS,
       data: result.data //사용자 정보 위치
     });
+    alert("회원가입이 완료되었습니다. 메인 페이지로 이동합니다");
+    Router.push("/");
   } catch (error) {
     //loginAPI 실패 시 실행
     console.log(error);
