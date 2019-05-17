@@ -1,12 +1,3 @@
-const dummyUser = {
-  //로그인 action이 되었을 때, initialState에 들어갈 user
-  nickname: "현재",
-  Post: [],
-  Followers: [],
-  Followings: [],
-  id: 1
-};
-
 export const initialState = {
   isLoggedIn: false, // 로그인 여부
   isLoggingOut: false, // 로그아웃 시도중
@@ -72,7 +63,7 @@ export default (state = initialState, action) => {
         ...state,
         isLoggingIn: false,
         isLoggedIn: true,
-        me: dummyUser,
+        me: action.data,
         isLoading: false
       };
     }

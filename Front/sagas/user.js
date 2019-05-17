@@ -18,18 +18,21 @@ import {
 } from "../reducers/user";
 import axios from "axios";
 
-function loginAPI() {
+axios.defaults.baseURL = "http://localhost:3065/api";
+
+function loginAPI(loginData) {
   // 서버에 요청을 보내는 부분
-  return axios.post("/login");
+  return axios.post("/user/login", loginData);
 }
 
-function* login() {
+function* login(action) {
   try {
-    // yield call(loginAPI); //call = 동기적 실행
-    yield delay(2000);
+    const result = yield call(loginAPI, action.data); //call = 동기적 실행
+    // yield delay(2000);
     yield put({
       //put = dispatch --- loginAPI 성공 시 실행
-      type: LOG_IN_SUCCESS
+      type: LOG_IN_SUCCESS,
+      data: result.data //사용자 정보 위치
     });
   } catch (error) {
     //loginAPI 실패 시 실행
@@ -44,17 +47,15 @@ function* watchLogin() {
 }
 ////////////////////////////////////////////////////////
 
-function signUpAPI() {
-  return axios.post("/login");
+function signUpAPI(signUpData) {
+  return axios.post("/user", signUpData);
 }
 
-function* signUp() {
+function* signUp(action) {
+  //SIGN_UP_REQUEST를 통한 정보가 action으로
   try {
-    // yield call(signUpAPI); //call = 동기적 실행
-    yield delay(2000);
-    throw new Error("Making Error");
-
-    // eslint-disable-next-line no-unreachable
+    yield call(signUpAPI, action.data); //call = 동기적 실행
+    // yield delay(2000);
     yield put({
       //put = dispatch --- loginAPI 성공 시 실행
       type: SIGN_UP_SUCCESS

@@ -62,13 +62,13 @@ const Signup = () => {
       return dispatch({
         type: SIGN_UP_REQUEST,
         data: {
-          id,
+          userId: id,
           password,
-          nick
+          nickname: nick
         }
       });
     },
-    [password, passwordCheck, term]
+    [id, nick, password, passwordCheck, term]
   );
   //state 붙여 해당 state가 바뀔 때 rerendering
   //내부에서 state에 대해 이용을 하면 rerendering 할 수 있게 붙여주어야 한다
