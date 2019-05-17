@@ -37,8 +37,6 @@ function* login(action) {
       type: LOG_IN_SUCCESS,
       data: result.data //사용자 정보 위치
     });
-    alert("회원가입이 완료되었습니다. 메인 페이지로 이동합니다");
-    Router.push("/");
   } catch (error) {
     //loginAPI 실패 시 실행
     console.log(error);
@@ -65,6 +63,8 @@ function* signUp(action) {
       //put = dispatch --- loginAPI 성공 시 실행
       type: SIGN_UP_SUCCESS
     });
+    alert("회원가입이 완료되었습니다. 로그인 후 이용해주세요");
+    Router.push("/");
   } catch (error) {
     //loginAPI 실패 시 실행
     console.log(error);
