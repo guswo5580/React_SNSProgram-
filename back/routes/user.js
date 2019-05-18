@@ -5,14 +5,35 @@ const db = require('../models');
 
 const router = express.Router();
 
-router.get('/', (req, res) => { //로그인 시 자동으로 내 정보 가져오기
+router.get('/', async (req, res) => { //로그인 시 자동으로 내 정보 가져오기
   if (!req.user) {
     return res.status(401).send('로그인이 필요합니다.');
   }
-  const user = Object.assign({}, req.user.toJSON());
-  delete user.password;
-  return res.json(user);
+  try{
+    const FullUser = await db.User.findOne({
+      where : {id : req.user.id},
+      include : [{
+        model:db.Post,
+        as : 'Posts',
+        attributes : ['id']
+      },{
+        model:db.User,
+        as : 'Followings',
+        attributes : ['id']
+      },{
+        model:db.User,
+        as : 'Followers',
+        attributes : ['id']
+      }],
+      attributes : ['id','nickname','userId']
+    });
+    console.log(FullUser);
+    return res.json(FullUser);
+  }catch(error){
+    next(error)
+  }
 });
+
 router.post('/', async (req, res, next) => { // POST /api/user 회원가입
   try {
     const exUser = await db.User.findOne({

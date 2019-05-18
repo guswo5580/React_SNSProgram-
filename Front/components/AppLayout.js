@@ -16,11 +16,13 @@ const AppLayout = ({ children }) => {
 
   useEffect(() => {
     if (!me) {
+      //유저 정보가 존재하지 않을 때, LOAD_USER_REQUEST요청을 보냄
       dispatch({
         type: LOAD_USER_REQUEST
       });
     }
   }, []);
+
   return (
     <div>
       <Menu mode="horizontal">

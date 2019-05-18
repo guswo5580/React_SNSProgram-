@@ -3,14 +3,16 @@ const db = require('../models');
 
 const router = express.Router();
 
-router.get('/', async (req, res, next) => { // GET /api/posts
+//접속 시, 모든 게시글을 가져오기
+
+router.get('/', async (req, res, next) => { 
   try {
     const posts = await db.Post.findAll({
       include: [{
-        model: db.User,
-        attributes: ['id', 'nickname'],
+        model: db.User, 
+        attributes: ['id', 'nickname'], //비밀번호 제외
       }],
-      order: [['createdAt', 'DESC']], // DESC는 내림차순, ASC는 오름차순
+      order: [['createdAt', 'DESC']], 
     });
     res.json(posts);
   } catch (e) {

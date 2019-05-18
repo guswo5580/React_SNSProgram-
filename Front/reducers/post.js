@@ -22,17 +22,6 @@ export const initialState = {
   commentAdded: false //댓글 업로드 성공
 };
 
-const dummyPost = {
-  //예시 포스트
-  id: 2,
-  User: {
-    id: 1,
-    nickname: "현재2"
-  },
-  content: "게시글 업로드 확인",
-  Comments: []
-};
-
 const dummyComment = {
   //예시 댓글
   id: 1,
@@ -104,9 +93,8 @@ export default (state = initialState, action) => {
       return {
         ...state,
         isAddingPost: false,
-        mainPosts: [dummyPost, ...state.mainPosts],
+        mainPosts: [action.data, ...state.mainPosts],
         postAdded: true
-        //불변성 확립!!
       };
     }
     case ADD_POST_FAILURE: {
@@ -127,12 +115,11 @@ export default (state = initialState, action) => {
     case ADD_COMMENT_SUCCESS: {
       const postIndex = state.mainPosts.findIndex(
         v => v.id === action.data.postId
-        //댓글을 입력할 게시글 찾기
       );
       const post = state.mainPosts[postIndex];
-      const Comments = [...post.Comments, dummyComment];
-      const mainPosts = [...state.mainPosts]; //새로운 mainPost 객체 생성
-      mainPosts[postIndex] = { ...post, Comments }; //불변성 확립 , 댓글 추가
+      const Comments = [...post.Comments, action.data.comment];
+      const mainPosts = [...state.mainPosts];
+      mainPosts[postIndex] = { ...post, Comments };
       return {
         ...state,
         isAddingComment: false,
@@ -145,6 +132,23 @@ export default (state = initialState, action) => {
         ...state,
         isAddingComment: false,
         addCommentErrorReason: action.error
+      };
+    }
+    case LOAD_MAIN_POSTS_REQUEST: {
+      return {
+        ...state,
+        mainPosts: []
+      };
+    }
+    case LOAD_MAIN_POSTS_SUCCESS: {
+      return {
+        ...state,
+        mainPosts: action.data
+      };
+    }
+    case LOAD_MAIN_POSTS_FAILURE: {
+      return {
+        ...state
       };
     }
     default: {

@@ -19,7 +19,7 @@ passportConfig();
 
 app.use(morgan('dev'));
 app.use(cors({
-  origin: true,
+  origin: 'http://localhost:3000',
   credentials: true,
 }));
 app.use(express.json());
@@ -33,7 +33,7 @@ app.use(expressSession({
     httpOnly: true,
     secure: false, // https를 쓸 때 true
   },
-  name: 'rnbck',
+  name: 'peace',
 }));
 app.use(passport.initialize());
 app.use(passport.session());

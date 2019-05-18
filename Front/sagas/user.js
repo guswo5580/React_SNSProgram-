@@ -1,13 +1,4 @@
-import {
-  all,
-  fork,
-  takeLatest,
-  takeEvery,
-  call,
-  put,
-  take,
-  delay
-} from "redux-saga/effects";
+import { all, fork, takeEvery, call, put } from "redux-saga/effects";
 import {
   LOG_IN_REQUEST,
   LOG_IN_SUCCESS,
@@ -24,8 +15,6 @@ import {
 } from "../reducers/user";
 import axios from "axios";
 import Router from "next/router";
-
-axios.defaults.baseURL = "http://localhost:3065/api";
 
 function loginAPI(loginData) {
   // 서버에 요청을 보내는 부분
@@ -113,26 +102,30 @@ function* watchLogOut() {
 
 ///////////////////////////////////////
 function loadUserAPI() {
-  return axios.get("/user/", { withCredentials: true });
+  return axios.get("/user", { withCredentials: true });
   //쿠키가 있으면 쿠키를 이용하여 요청
 }
 
 function* loadUser() {
   try {
-    // yield call(loadUserAPI);
+    console.log("1");
     const result = yield call(loadUserAPI);
+    console.log("2");
     yield put({
-      // put은 dispatch 동일
       type: LOAD_USER_SUCCESS,
       data: result.data
     });
+    console.log("유저정보 확인", result.data);
+    alert("되는거니?");
   } catch (e) {
     // loginAPI 실패
+    console.log("3");
     console.error(e);
     yield put({
       type: LOAD_USER_FAILURE,
       error: e
     });
+    alert("아니 안돼");
   }
 }
 

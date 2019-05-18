@@ -16,15 +16,23 @@ const PostForm = () => {
     setText("");
   }, [postAdded === true]);
 
-  const onSubmitForm = useCallback(e => {
-    e.preventDefault();
-    dispatch({
-      type: ADD_POST_REQUEST,
-      data: {
-        text
+  const onSubmitForm = useCallback(
+    e => {
+      e.preventDefault();
+      if (!text || !text.trim()) {
+        //게시글이 없는 경우, 공백만 있는 경우
+        return alert("게시글을 작성해주세요");
+        //return으로 중간에 끊기!!!
       }
-    });
-  }, []);
+      dispatch({
+        type: ADD_POST_REQUEST,
+        data: {
+          content: text.trim()
+        }
+      });
+    },
+    [text]
+  );
 
   const onChangeText = useCallback(e => {
     setText(e.target.value);
@@ -59,7 +67,7 @@ const PostForm = () => {
           return (
             <div key={v} style={{ display: "inline-block" }}>
               <img
-                src={"http://localhost:3000/" + v}
+                src={`http://localhost:3065/${v}`}
                 style={{ width: "200px" }}
                 alt={v}
               />
