@@ -10,7 +10,7 @@ import AppLayout from "../components/AppLayout";
 import reducer from "../reducers";
 import rootSaga from "../sagas";
 
-const PeaceOcean = ({ Component, store }) => {
+const PeaceOcean = ({ Component, store, pageProps }) => {
   //Component를 props로 전달
   return (
     <Provider store={store}>
@@ -25,14 +25,26 @@ const PeaceOcean = ({ Component, store }) => {
       {/* next 에서 넣어주는 props 
         Head부분이 Component에 포함되어 AppLayout에 전달됨을 의미*/}
       <AppLayout>
-        <Component />
+        <Component {...pageProps} />
       </AppLayout>
     </Provider>
   );
 };
 PeaceOcean.propTypes = {
   Component: PropTypes.elementType.isRequired, //jsx형식의 Component를 전달하는 경우
-  store: PropTypes.object.isRequired
+  store: PropTypes.object.isRequired,
+  pageProps: PropTypes.object.isRequired
+};
+//Next - Express의 동적 라우팅에서 전달 받은 값을
+//각 Component로 보내는 중간 다리 역할
+PeaceOcean.getInitialProps = async context => {
+  const { ctx } = context;
+  let pageProps = {};
+  if (context.Component.getInitialProps) {
+    pageProps = await context.Component.getInitialProps(ctx);
+  }
+  return { pageProps };
+  //Component의 props 해주는 역할!!!
 };
 
 //미들웨어 생성 예시

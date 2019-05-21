@@ -30,6 +30,19 @@ app.prepare().then(() => {
       }
     })
   );
+  // 동적 Routing을 위한 Front의 Routing 추가!!!
+  server.get("/hashtag/:tag", (req, res) => {
+    return app.render(req, res, "/hashtag", {
+      tag: req.params.tag
+    });
+    //주소는 :tag가 붙어있지만!! 실제로 보여주는 페이지는 pages에 있는 해당 페이지
+    //params로 Data를 전달 ---> hashtag 내부에서 getInitialProps로 전달됨!!
+  });
+  server.get("/user/:id", (req, res) => {
+    return app.render(req, res, "/user", {
+      id: req.params.id
+    });
+  });
   server.get("*", (req, res) => {
     return handle(req, res);
   });
