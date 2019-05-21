@@ -57,18 +57,33 @@ const PostCard = ({ post }) => {
         extra={<Button> 팔로우 </Button>}
       >
         <Card.Meta
-          avatar={<Avatar> {post.User.nickname[0]} </Avatar>}
+          avatar={
+            <Link
+              href={{ pathname: "/user", query: { id: post.User.id } }}
+              as={`/user/${post.User.id}`}
+            >
+              <a>
+                <Avatar>{post.User.nickname[0]}</Avatar>
+              </a>
+            </Link>
+          }
           title={post.User.nickname}
           description={
             // 정규표현식 포함, content에서 해시태그를 판별
             // /(#[^\s]+)/g = # 구분자 포함, /#[^\s]+/g = # 구분자 제외
             <div>
               {post.content.split(/(#[^\s]+)/g).map(v => {
-                if (v.match(/(#[^\s]+)/g)) {
-                  //#포함이면
+                if (v.match(/#[^\s]+/)) {
                   return (
-                    <Link href="/hashtag" key={v}>
-                      {v}
+                    <Link
+                      href={{
+                        pathname: "/hashtag",
+                        query: { tag: v.slice(1) }
+                      }}
+                      as={`/hashtag/${v.slice(1)}`}
+                      key={v}
+                    >
+                      <a>{v}</a>
                     </Link>
                   );
                 }
@@ -100,9 +115,18 @@ const PostCard = ({ post }) => {
               <li>
                 <Comment
                   author={item.User.nickname}
-                  avatar={<Avatar> {item.User.nickname[0]} </Avatar>}
+                  avatar={
+                    <Link
+                      href={{ pathname: "/user", query: { id: item.User.id } }}
+                      as={`/user/${item.User.id}`}
+                    >
+                      <a>
+                        <Avatar>{item.User.nickname[0]}</Avatar>
+                      </a>
+                    </Link>
+                  }
                   content={item.content}
-                />{" "}
+                />
               </li>
             )}
           />{" "}

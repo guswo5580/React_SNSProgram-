@@ -1,17 +1,5 @@
 export const initialState = {
-  mainPosts: [
-    {
-      id: 1,
-      User: {
-        id: 1,
-        nickname: "현재"
-      },
-      content: "첫 번째 게시글",
-      img:
-        "https://bookthumb-phinf.pstatic.net/cover/137/995/13799585.jpg?udate=20180726",
-      Comments: []
-    }
-  ],
+  mainPosts: [],
   imagePaths: [], //미리보기 이미지 경로
   addPostErrorReason: "", // 포스트 업로드 실패 사유
   isAddingPost: false, // 포스트 업로드 중
@@ -20,17 +8,6 @@ export const initialState = {
   isAddingComment: false, //댓글 업로드 중
   addCommentErrorReason: "", //댓글 업로드 실패 이유
   commentAdded: false //댓글 업로드 성공
-};
-
-const dummyComment = {
-  //예시 댓글
-  id: 1,
-  User: {
-    id: 1,
-    nickname: "현재"
-  },
-  createdAt: new Date(),
-  content: "댓글 업로드 확인"
 };
 
 export const LOAD_MAIN_POSTS_REQUEST = "LOAD_MAIN_POSTS_REQUEST";
@@ -134,19 +111,26 @@ export default (state = initialState, action) => {
         addCommentErrorReason: action.error
       };
     }
-    case LOAD_MAIN_POSTS_REQUEST: {
+    case LOAD_MAIN_POSTS_REQUEST:
+    case LOAD_HASHTAG_POSTS_REQUEST:
+    case LOAD_USER_POSTS_REQUEST: {
+      //같은 역할을 하는 경우 Case 문으로 엮어서 이용!!
       return {
         ...state,
         mainPosts: []
       };
     }
-    case LOAD_MAIN_POSTS_SUCCESS: {
+    case LOAD_MAIN_POSTS_SUCCESS:
+    case LOAD_HASHTAG_POSTS_SUCCESS:
+    case LOAD_USER_POSTS_SUCCESS: {
       return {
         ...state,
         mainPosts: action.data
       };
     }
-    case LOAD_MAIN_POSTS_FAILURE: {
+    case LOAD_MAIN_POSTS_FAILURE:
+    case LOAD_HASHTAG_POSTS_FAILURE:
+    case LOAD_USER_POSTS_FAILURE: {
       return {
         ...state
       };
