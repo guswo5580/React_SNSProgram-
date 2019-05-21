@@ -1,5 +1,6 @@
 import React, { useState, useCallback, useEffect } from "react";
 import { Card, Icon, Button, Avatar, Form, Input, List, Comment } from "antd";
+import Link from "next/link";
 import PropTypes from "prop-types";
 import { useSelector, useDispatch } from "react-redux";
 import { ADD_COMMENT_REQUEST } from "../reducers/post";
@@ -53,14 +54,30 @@ const PostCard = ({ post }) => {
           <Icon type="message" key="message" onClick={onToggleComment} />,
           <Icon type="ellipsis" key="ellipsis" />
         ]}
-        extra={<Button>팔로우</Button>}
+        extra={<Button> 팔로우 </Button>}
       >
         <Card.Meta
-          avatar={<Avatar>{post.User.nickname[0]}</Avatar>}
+          avatar={<Avatar> {post.User.nickname[0]} </Avatar>}
           title={post.User.nickname}
-          description={post.content}
+          description={
+            // 정규표현식 포함, content에서 해시태그를 판별
+            // /(#[^\s]+)/g = # 구분자 포함, /#[^\s]+/g = # 구분자 제외
+            <div>
+              {post.content.split(/(#[^\s]+)/g).map(v => {
+                if (v.match(/(#[^\s]+)/g)) {
+                  //#포함이면
+                  return (
+                    <Link href="/hashtag" key={v}>
+                      {v}
+                    </Link>
+                  );
+                }
+                return v;
+              })}
+            </div>
+          }
         />
-      </Card>
+      </Card>{" "}
       {commentFormOpened && (
         <>
           <Form onSubmit={onSubmitComment}>
@@ -69,12 +86,12 @@ const PostCard = ({ post }) => {
                 rows={4}
                 value={commentText}
                 onChange={onChangeCommentText}
-              />
-            </Form.Item>
+              />{" "}
+            </Form.Item>{" "}
             <Button type="primary" htmlType="submit" loading={isAddingComment}>
-              보내기
-            </Button>
-          </Form>
+              보내기{" "}
+            </Button>{" "}
+          </Form>{" "}
           <List
             header={`${post.Comments ? post.Comments.length : 0} 댓글`}
             itemLayout="horizontal"
@@ -83,14 +100,14 @@ const PostCard = ({ post }) => {
               <li>
                 <Comment
                   author={item.User.nickname}
-                  avatar={<Avatar>{item.User.nickname[0]}</Avatar>}
+                  avatar={<Avatar> {item.User.nickname[0]} </Avatar>}
                   content={item.content}
-                />
+                />{" "}
               </li>
             )}
-          />
+          />{" "}
         </>
-      )}
+      )}{" "}
     </div>
   );
 };

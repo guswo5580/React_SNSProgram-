@@ -34,7 +34,7 @@ function* login(action) {
     });
   } catch (error) {
     //loginAPI 실패 시 실행
-    console.log(error);
+    console.error(error);
     yield put({
       type: LOG_IN_FAILURE
     });
@@ -108,24 +108,17 @@ function loadUserAPI() {
 
 function* loadUser() {
   try {
-    console.log("1");
     const result = yield call(loadUserAPI);
-    console.log("2");
     yield put({
       type: LOAD_USER_SUCCESS,
       data: result.data
     });
-    console.log("유저정보 확인", result.data);
-    alert("되는거니?");
   } catch (e) {
     // loginAPI 실패
-    console.log("3");
-    console.error(e);
     yield put({
       type: LOAD_USER_FAILURE,
       error: e
     });
-    alert("아니 안돼");
   }
 }
 

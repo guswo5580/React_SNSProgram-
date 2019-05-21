@@ -59,7 +59,7 @@ router.post('/', async (req, res, next) => { // POST /api/user 회원가입
   }
 });
 
-router.get('/:id', (req, res) => { //api/user/123
+router.get('/:id', (req, res) => { //api/user/123 
 
 });
 
