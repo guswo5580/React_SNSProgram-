@@ -8,10 +8,13 @@ const PostImages = ({ images }) => {
   const [showImagesZoom, setShowImagesZoom] = useState(false);
 
   const onZoom = useCallback(() => {
+    //이미지 확대
     setShowImagesZoom(true);
   }, []);
 
   const onClose = useCallback(() => {
+    //이미지 더보기 끄기
+    //ImageZoom으로 prop 값을 넘겨, 하위 컴포넌트에서 실행할 수 있도록
     setShowImagesZoom(false);
   }, []);
 
@@ -64,8 +67,7 @@ const PostImages = ({ images }) => {
         >
           <Icon type="plus" />
           <br />
-          {images.length - 1}
-          개의 사진 더보기
+          {images.length - 1} 개의 사진 더보기
         </div>
       </div>
       {showImagesZoom && <ImagesZoom images={images} onClose={onClose} />}
