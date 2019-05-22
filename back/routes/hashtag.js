@@ -15,7 +15,12 @@ router.get('/:tag', async (req, res, next) => {
                 //한글 -> URI로 인코딩 되어 값이 들어오므로 decoded를 해준다 
             }, {
                 model : db.Image
-            }]
+            },{
+                model : db.User,
+                through : 'Like',
+                as : 'Likers',
+                attributes : ['id']
+              }]
         });
         res.json(posts);
     }catch(error){

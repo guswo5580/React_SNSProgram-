@@ -173,11 +173,62 @@ export default (state = initialState, action) => {
         ...state
       };
     }
+    ////////////////////////////////
     case REMOVE_IMAGE: {
       return {
         ...state,
         imagePaths: state.imagePaths.filter((v, i) => i !== action.index)
         //선택한 index 값을 뺀 나머지만 filter로 거르기
+      };
+    }
+    ////////////////////////////////
+    case LIKE_POST_REQUEST: {
+      return {
+        ...state
+      };
+    }
+    case LIKE_POST_SUCCESS: {
+      const postIndex = state.mainPosts.findIndex(
+        v => v.id === action.data.postId
+      );
+      const post = state.mainPosts[postIndex];
+      const Likers = [{ id: action.data.userId }, ...post.Likers];
+      //좋아요 목록에 내 정보 추가
+      const mainPosts = [...state.mainPosts];
+      mainPosts[postIndex] = { ...post, Likers };
+      //mainPosts 불변성확립
+      return {
+        ...state,
+        mainPosts
+      };
+    }
+    case LIKE_POST_FAILURE: {
+      return {
+        ...state
+      };
+    }
+    case UNLIKE_POST_REQUEST: {
+      return {
+        ...state
+      };
+    }
+    case UNLIKE_POST_SUCCESS: {
+      const postIndex = state.mainPosts.findIndex(
+        v => v.id === action.data.postId
+      );
+      const post = state.mainPosts[postIndex];
+      const Likers = post.Likers.filter(v => v.id !== action.data.userId);
+      //필터링으로 목록에서 내 id 삭제
+      const mainPosts = [...state.mainPosts];
+      mainPosts[postIndex] = { ...post, Likers };
+      return {
+        ...state,
+        mainPosts
+      };
+    }
+    case UNLIKE_POST_FAILURE: {
+      return {
+        ...state
       };
     }
     default: {

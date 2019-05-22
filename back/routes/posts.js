@@ -13,6 +13,11 @@ router.get('/', async (req, res, next) => {
         attributes: ['id', 'nickname'], //비밀번호 제외
       },{
         model: db.Image
+      },{
+        model : db.User,
+        through : 'Like',
+        as : 'Likers',
+        attributes : ['id']
       }],
       order: [['createdAt', 'DESC']], 
     });
