@@ -4,6 +4,7 @@ import Link from "next/link";
 import PropTypes from "prop-types";
 import { useSelector, useDispatch } from "react-redux";
 import { ADD_COMMENT_REQUEST, LOAD_COMMENTS_REQUEST } from "../reducers/post";
+import PostImages from "./PostImages";
 
 //게시글
 const PostCard = ({ post }) => {
@@ -55,7 +56,7 @@ const PostCard = ({ post }) => {
     <div>
       <Card
         key={+post.createdAt}
-        cover={post.img && <img alt="example" src={post.img} />}
+        cover={post.Images[0] && <PostImages images={post.Images} />}
         actions={[
           <Icon type="retweet" key="retweet" />,
           <Icon type="heart" key="heart" />,
