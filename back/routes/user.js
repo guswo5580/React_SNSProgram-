@@ -2,13 +2,11 @@ const express = require('express');
 const bcrypt = require('bcrypt');
 const passport = require('passport');
 const db = require('../models');
+const {isLoggedIn} = require('./middleware');
 
 const router = express.Router();
 
-router.get('/', async (req, res) => { //로그인 시 자동으로 내 정보 가져오기
-  if (!req.user) {
-    return res.status(401).send('로그인이 필요합니다.');
-  }
+router.get('/', isLoggedIn, async (req, res) => { //로그인 시 자동으로 내 정보 가져오기
   try{
     const FullUser = await db.User.findOne({
       where : {id : req.user.id},

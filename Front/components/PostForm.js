@@ -1,7 +1,11 @@
-import React, { useCallback, useState, useEffect } from "react";
+import React, { useCallback, useState, useEffect, useRef } from "react";
 import { Form, Input, Button } from "antd";
 import { useSelector, useDispatch } from "react-redux";
-import { ADD_POST_REQUEST } from "../reducers/post";
+import {
+  ADD_POST_REQUEST,
+  REMOVE_IMAGE,
+  UPLOAD_IMAGES_REQUEST
+} from "../reducers/post";
 
 //게시글 업로드 부분
 const PostForm = () => {
@@ -10,12 +14,14 @@ const PostForm = () => {
   const { imagePaths, isAddingPost, postAdded } = useSelector(
     state => state.post
   );
+  const imageInput = useRef();
 
   useEffect(() => {
     //게시글 업로드 완료 확인 후 초기화
     setText("");
   }, [postAdded === true]);
 
+  //////텍스트///////
   const onSubmitForm = useCallback(
     e => {
       e.preventDefault();
@@ -38,6 +44,35 @@ const PostForm = () => {
     setText(e.target.value);
   }, []);
 
+  //////이미지///////
+  const onChangeImages = useCallback(e => {
+    // console.log(e.target.files);
+    const imageFormData = new FormData();
+    [].forEach.call(e.target.files, f => {
+      imageFormData.append("image", f);
+    });
+    dispatch({
+      type: UPLOAD_IMAGES_REQUEST,
+      data: imageFormData
+    });
+  }, []);
+
+  const onClickImageUpload = useCallback(() => {
+    imageInput.current.click();
+  }, [imageInput.current]);
+
+  //고차함수 적용 구간 ( => 2번 적용 )
+  const onRemoveImage = useCallback(
+    //미리보기 이미지 제거 버튼
+    index => () => {
+      dispatch({
+        type: REMOVE_IMAGE,
+        index
+      });
+    },
+    []
+  );
+
   return (
     <Form
       style={{ margin: "10px 0 20px" }}
@@ -46,13 +81,19 @@ const PostForm = () => {
     >
       <Input.TextArea
         maxLength={140}
-        placeholder=" 오늘은 어떤 일이 있었나요?"
+        placeholder="어떤 신기한 일이 있었나요?"
         value={text}
         onChange={onChangeText}
       />
       <div>
-        <input type="file" multiple hidden />
-        <Button>이미지 업로드</Button>
+        <input
+          type="file"
+          multiple
+          hidden
+          ref={imageInput}
+          onChange={onChangeImages}
+        />
+        <Button onClick={onClickImageUpload}>이미지 업로드</Button>
         <Button
           type="primary"
           style={{ float: "right" }}
@@ -63,7 +104,7 @@ const PostForm = () => {
         </Button>
       </div>
       <div>
-        {imagePaths.map(v => {
+        {imagePaths.map((v, i) => {
           return (
             <div key={v} style={{ display: "inline-block" }}>
               <img
@@ -72,7 +113,7 @@ const PostForm = () => {
                 alt={v}
               />
               <div>
-                <Button>제거</Button>
+                <Button onClick={onRemoveImage(i)}>제거</Button>
               </div>
             </div>
           );

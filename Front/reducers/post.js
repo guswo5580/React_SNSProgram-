@@ -81,6 +81,7 @@ export default (state = initialState, action) => {
         addPostErrorReason: action.error
       };
     }
+    ////////////////////////////////
     case ADD_COMMENT_REQUEST: {
       return {
         ...state,
@@ -111,6 +112,7 @@ export default (state = initialState, action) => {
         addCommentErrorReason: action.error
       };
     }
+    ////////////////////////////////
     case LOAD_COMMENTS_SUCCESS: {
       const postIndex = state.mainPosts.findIndex(
         v => v.id === action.data.postId
@@ -124,6 +126,8 @@ export default (state = initialState, action) => {
         mainPosts
       };
     }
+
+    ////////////////////////////////
     case LOAD_MAIN_POSTS_REQUEST:
     case LOAD_HASHTAG_POSTS_REQUEST:
     case LOAD_USER_POSTS_REQUEST: {
@@ -146,6 +150,33 @@ export default (state = initialState, action) => {
     case LOAD_USER_POSTS_FAILURE: {
       return {
         ...state
+      };
+    }
+    ////////////////////////////////
+    case UPLOAD_IMAGES_REQUEST: {
+      return {
+        ...state
+      };
+    }
+    case UPLOAD_IMAGES_SUCCESS: {
+      return {
+        ...state,
+        imagePaths: [...state.imagePaths, ...action.data]
+        //선택한 이미지 경로에 action으로 서버에서 받은 것을 추가로 선택 가능
+        //Ex 사진 한장만 보내려고 했다가 --- 여러장을 보내려해도
+        //기존의 imagePath와 같이 보내므로 하나로 보내는 것으로 인식
+      };
+    }
+    case UPLOAD_IMAGES_FAILURE: {
+      return {
+        ...state
+      };
+    }
+    case REMOVE_IMAGE: {
+      return {
+        ...state,
+        imagePaths: state.imagePaths.filter((v, i) => i !== action.index)
+        //선택한 index 값을 뺀 나머지만 filter로 거르기
       };
     }
     default: {
