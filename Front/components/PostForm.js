@@ -30,14 +30,19 @@ const PostForm = () => {
         return alert("게시글을 작성해주세요");
         //return으로 중간에 끊기!!!
       }
+
+      //Text와 Image를 FormData 형식으로 보내기
+      const formData = new FormData();
+      imagePaths.forEach(i => {
+        formData.append("image", i);
+      });
+      formData.append("content", text);
       dispatch({
         type: ADD_POST_REQUEST,
-        data: {
-          content: text.trim()
-        }
+        data: formData
       });
     },
-    [text]
+    [text, imagePaths]
   );
 
   const onChangeText = useCallback(e => {

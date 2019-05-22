@@ -11,6 +11,8 @@ router.get('/', async (req, res, next) => {
       include: [{
         model: db.User, 
         attributes: ['id', 'nickname'], //비밀번호 제외
+      },{
+        model: db.Image
       }],
       order: [['createdAt', 'DESC']], 
     });

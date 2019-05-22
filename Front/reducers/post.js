@@ -71,7 +71,8 @@ export default (state = initialState, action) => {
         ...state,
         isAddingPost: false,
         mainPosts: [action.data, ...state.mainPosts],
-        postAdded: true
+        postAdded: true,
+        imagePaths: [] //이미지 미리보기 초기화
       };
     }
     case ADD_POST_FAILURE: {

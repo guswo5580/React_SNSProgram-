@@ -135,21 +135,6 @@ router.post('/login', (req, res, next) => { // POST /api/user/login
   // passport.authenticate 이용 시 붙여줄 것
 });
 
-router.get('/:id/follow', (req, res) => { // /api/user/:id/follow
-
-});
-router.post('/:id/follow', (req, res) => {
-
-});
-
-router.delete('/:id/follow', (req, res) => {
-
-});
-
-router.delete('/:id/follower', (req, res) => {
-
-});
-
 router.get('/:id/posts', async (req, res, next) => {
   try {
     const posts = await db.Post.findAll({
@@ -175,5 +160,22 @@ router.get('/:id/posts', async (req, res, next) => {
     next(e);
   }
 });
+
+router.get('/:id/follow', (req, res) => { // /api/user/:id/follow
+
+});
+router.post('/:id/follow', (req, res) => {
+
+});
+
+router.delete('/:id/follow', (req, res) => {
+
+});
+
+router.delete('/:id/follower', (req, res) => {
+
+});
+
+
 
 module.exports = router;

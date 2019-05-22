@@ -6,8 +6,25 @@ const path = require('path');
 
 const router = express.Router();
 
+///////multer 설정////////
+const upload = multer({
+  storage: multer.diskStorage({
+    //diskStorage 서버 쪽에 저장하겠다는 의미 (구글 드라이브, S3 등으로 변형 가능)
+    destination(req, file, done) {
+      done(null, 'uploads'); //uploads 폴더에 저장
+    },
+    filename(req, file, done) {
+      const ext = path.extname(file.originalname); //확장자
+      const basename = path.basename(file.originalname, ext); //basename
+      done(null, basename + new Date().valueOf() + ext);
+      //basename + 시간 값 + 확장자 -- file명이 같은 것을 방지!! 
+    },
+  }),
+  limits: { fileSize: 20 * 1024 * 1024 }, //파일 사이즈 제한 옵션(byte 단위)
+});
+
 //게시글 작성
-router.post('/', isLoggedIn, async (req, res, next) => { // POST /api/post
+router.post('/', isLoggedIn, upload.none(), async (req, res, next) => { // POST /api/post
   try {
     const hashtags = req.body.content.match(/#[^\s]+/g); //#뒤의 글자 추출
     const newPost = await db.Post.create({
@@ -23,7 +40,23 @@ router.post('/', isLoggedIn, async (req, res, next) => { // POST /api/post
       //Post ~ Hashtag와 관계 설정
       await newPost.addHashtags(result.map(r => r[0]));
     }
+    
+    if (req.body.image) { 
+      if (Array.isArray(req.body.image)) {
+        //이미지 주소가 여러 개 일 때, --- 배열 형식
+        const images = await Promise.all(req.body.image.map((image) => {
+          //배열을 map으로 나누어 쿼리 작업 후 Promise.all을 하면 한방에 처리 가능!! 
+          return db.Image.create({ src: image });
+        }));
 
+        await newPost.addImages(images);
+      } else { 
+        //이미지 주소가 하나일 때 --- 배열 X 
+        const image = await db.Image.create({ src: req.body.image });
+        await newPost.addImage(image);
+      }
+    }
+    
     // 시퀄라이즈에서 제공하는 방식을 이용하여 합쳐 보내기
     // const User = await newPost.getUser();
     // newPost.User = User;
@@ -34,6 +67,8 @@ router.post('/', isLoggedIn, async (req, res, next) => { // POST /api/post
       where: { id: newPost.id },
       include: [{
         model: db.User,
+      },{
+        model : db.Image
       }],
     });
     res.json(FullPost);
@@ -97,22 +132,6 @@ router.post('/:id/comment', isLoggedIn, async (req, res, next) => { // POST /api
     console.error(e);
     return next(e);
   }
-});
-///////multer 설정////////
-const upload = multer({
-  storage: multer.diskStorage({
-    //diskStorage 서버 쪽에 저장하겠다는 의미 (구글 드라이브, S3 등으로 변형 가능)
-    destination(req, file, done) {
-      done(null, 'uploads'); //uploads 폴더에 저장
-    },
-    filename(req, file, done) {
-      const ext = path.extname(file.originalname); //확장자
-      const basename = path.basename(file.originalname, ext); //basename
-      done(null, basename + new Date().valueOf() + ext);
-      //basename + 시간 값 + 확장자 -- file명이 같은 것을 방지!! 
-    },
-  }),
-  limits: { fileSize: 20 * 1024 * 1024 }, //파일 사이즈 제한 옵션(byte 단위)
 });
 
 router.post('/images', upload.array('image'), (req, res) => {
