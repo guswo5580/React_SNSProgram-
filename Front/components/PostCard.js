@@ -3,7 +3,7 @@ import { Card, Icon, Button, Avatar, Form, Input, List, Comment } from "antd";
 import Link from "next/link";
 import PropTypes from "prop-types";
 import { useSelector, useDispatch } from "react-redux";
-import { ADD_COMMENT_REQUEST } from "../reducers/post";
+import { ADD_COMMENT_REQUEST, LOAD_COMMENTS_REQUEST } from "../reducers/post";
 
 //게시글
 const PostCard = ({ post }) => {
@@ -17,6 +17,13 @@ const PostCard = ({ post }) => {
   const onToggleComment = useCallback(() => {
     //댓글 창을 오픈 여부, 이전 state 값에 따라 열고 닫고
     setCommentFormOpened(prev => !prev);
+
+    if (!commentFormOpened) {
+      dispatch({
+        type: LOAD_COMMENTS_REQUEST,
+        data: post.id
+      });
+    }
   }, []);
 
   const onSubmitComment = useCallback(e => {
@@ -27,10 +34,11 @@ const PostCard = ({ post }) => {
       {
         type: ADD_COMMENT_REQUEST,
         data: {
-          postId: post.id
+          postId: post.id,
+          content: commentText
         }
       },
-      [me && me.id]
+      [me && me.id, commentText]
     );
   });
 
