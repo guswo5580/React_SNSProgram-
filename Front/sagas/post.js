@@ -29,8 +29,12 @@ import {
   LIKE_POST_SUCCESS,
   UNLIKE_POST_FAILURE,
   UNLIKE_POST_REQUEST,
-  UNLIKE_POST_SUCCESS
+  UNLIKE_POST_SUCCESS,
+  RETWEET_REQUEST,
+  RETWEET_SUCCESS,
+  RETWEET_FAILURE
 } from "../reducers/post";
+import { ADD_POST_TO_ME } from "../reducers/user";
 
 function addPostAPI(postData) {
   return axios.post("/post", postData, {
@@ -42,8 +46,14 @@ function* addPost(action) {
   try {
     const result = yield call(addPostAPI, action.data);
     yield put({
+      //post Reducer의 Data를 수정
       type: ADD_POST_SUCCESS,
       data: result.data
+    });
+    yield put({
+      //user Reducer의 Data를 수정
+      type: ADD_POST_TO_ME,
+      data: result.data.id
     });
   } catch (e) {
     yield put({
@@ -153,7 +163,7 @@ function* loadUserPosts(action) {
     const result = yield call(loadUserPostsAPI, action.data);
     yield put({
       type: LOAD_USER_POSTS_SUCCESS,
-      data: result.data~
+      data: result.data
     });
   } catch (e) {
     yield put({
@@ -285,10 +295,14 @@ function* watchUnlikePost() {
 }
 //////////////////////////////////////////////////////////
 function retweetAPI(postId) {
-  //Post 요청 시, data가 없어도 data 부분을 빈 객체로 보내기 
-  return axios.post(`/post/${postId}/retweet`, {}, {
-    withCredentials: true,
-  });
+  //Post 요청 시, data가 없어도 data 부분을 빈 객체로 보내기
+  return axios.post(
+    `/post/${postId}/retweet`,
+    {},
+    {
+      withCredentials: true
+    }
+  );
 }
 
 function* retweet(action) {
@@ -296,13 +310,13 @@ function* retweet(action) {
     const result = yield call(retweetAPI, action.data);
     yield put({
       type: RETWEET_SUCCESS,
-      data: result.data,
+      data: result.data
     });
   } catch (e) {
     // console.error(e);
     yield put({
       type: RETWEET_FAILURE,
-      error: e,
+      error: e
     });
     alert(e.response && e.response.data);
     //에러 정보 반환
@@ -324,6 +338,6 @@ export default function* postSaga() {
     fork(watchUploadImages),
     fork(watchLikePost),
     fork(watchUnlikePost),
-    fork(watchRetweet);
+    fork(watchRetweet)
   ]);
 }

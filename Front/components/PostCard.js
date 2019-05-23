@@ -11,6 +11,7 @@ import {
   UNLIKE_POST_REQUEST,
   RETWEET_REQUEST
 } from "../reducers/post";
+import { FOLLOW_USER_REQUEST, UNFOLLOW_USER_REQUEST } from "../reducers/user";
 import PostImages from "./PostImages";
 import PostCardContent from "./PostCardContent";
 //게시글
@@ -90,6 +91,27 @@ const PostCard = ({ post }) => {
       data: post.id
     });
   }, [me && me.id, post && post.id]);
+
+  const onFollow = useCallback(
+    userId => () => {
+      dispatch({
+        type: FOLLOW_USER_REQUEST,
+        data: userId
+      });
+    },
+    []
+  );
+
+  const onUnfollow = useCallback(
+    userId => () => {
+      dispatch({
+        type: UNFOLLOW_USER_REQUEST,
+        data: userId
+      });
+    },
+    []
+  );
+
   return (
     <div>
       <Card
@@ -112,7 +134,16 @@ const PostCard = ({ post }) => {
         title={
           post.RetweetId ? `${post.User.nickname}님이 리트윗 하였습니다` : null
         }
-        extra={<Button> 팔로우 </Button>}
+        extra={
+          //내 게시글일 경우 - null
+          //내 Following 목록에 있을 경우 취소
+          !me || post.User.id === me.id ? null : me.Followings &&
+            me.Followings.find(v => v.id === post.User.id) ? (
+            <Button onClick={onUnfollow(post.User.id)}>팔로우 취소</Button>
+          ) : (
+            <Button onClick={onFollow(post.User.id)}>팔로우</Button>
+          )
+        }
       >
         {post.RetweetId && post.Retweet ? (
           //Retweet 으로 생성된 게시글인지 여부에 따른 구분

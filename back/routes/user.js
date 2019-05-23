@@ -161,20 +161,77 @@ router.get('/:id/posts', async (req, res, next) => {
   }
 });
 
-router.get('/:id/follow', (req, res) => { // /api/user/:id/follow
-
+router.post('/:id/follow', isLoggedIn, async (req, res, next) => {
+  try {
+    //req.user로 가능하지만 시퀄라이즈 충돌이 발생할 경우가 생김  
+    const me = await db.User.findOne({
+      where: { id: req.user.id },
+    });
+    await me.addFollowing(req.params.id); //Following목록에 전송 id 추가
+    res.send(req.params.id);
+  } catch (e) {
+    console.error(e);
+    next(e);
+  }
 });
-router.post('/:id/follow', (req, res) => {
-
+router.delete('/:id/follow', isLoggedIn, async (req, res, next) => {
+  try {
+    //req.user로 가능하지만 시퀄라이즈 충돌이 발생할 경우가 생김  
+    const me = await db.User.findOne({
+      where: { id: req.user.id },
+    });
+    await me.removeFollowing(req.params.id); //Following 목록에서 id 삭제
+    res.send(req.params.id);
+  } catch (e) {
+    console.error(e);
+    next(e);
+  }
+});
+////////////////프로필 목록 팔로잉 팔로워 목록//////////////////
+router.get('/:id/followings', isLoggedIn, async (req, res, next) => { 
+  try {
+    const user = await db.User.findOne({
+      where: { id: parseInt(req.params.id, 10) },
+    });
+    const followers = await user.getFollowings({
+      attributes: ['id', 'nickname'],
+    });
+    res.json(followers);
+  } catch (e) {
+    console.error(e);
+    next(e);
+  }
 });
 
-router.delete('/:id/follow', (req, res) => {
-
+router.get('/:id/followers', isLoggedIn, async (req, res, next) => { 
+  try {
+    const user = await db.User.findOne({
+      where: { id: parseInt(req.params.id, 10) },
+    });
+    const followers = await user.getFollowers({
+      attributes: ['id', 'nickname'],
+    });
+    res.json(followers);
+  } catch (e) {
+    console.error(e);
+    next(e);
+  }
+});
+///////////////프로필 목록 팔로워 삭제//////////////////
+router.delete('/:id/follower', isLoggedIn, async (req, res, next) => {
+  try {
+    const me = await db.User.findOne({
+      where: { id: req.user.id },
+    });
+    await me.removeFollower(req.params.id);
+    //나와 params로 전송받은 id의 follow관계 끊기 
+    res.send(req.params.id);
+  } catch (e) {
+    console.error(e);
+    next(e);
+  }
 });
 
-router.delete('/:id/follower', (req, res) => {
-
-});
 
 
 
