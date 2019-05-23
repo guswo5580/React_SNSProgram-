@@ -140,7 +140,6 @@ router.get('/:id/posts', async (req, res, next) => {
     const posts = await db.Post.findAll({
       where: {
         UserId: parseInt(req.params.id, 10),
-        RetweetId: null,
       },
       include: [{
         model: db.User,
@@ -155,6 +154,7 @@ router.get('/:id/posts', async (req, res, next) => {
       }],
     });
     res.json(posts);
+    console.log("Send User", posts);
   } catch (e) {
     console.error(e);
     next(e);

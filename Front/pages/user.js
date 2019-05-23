@@ -51,12 +51,13 @@ const User = ({ id }) => {
           />
         </Card>
       ) : null}
-      {mainPosts.map(c => {
-        <PostCard key={+c.createdAt} post={c} />;
-      })}
+      {mainPosts.map(c => (
+        <PostCard key={+c.createdAt} post={c} />
+      ))}
     </div>
   );
 };
+
 User.propTypes = {
   id: PropTypes.number.isRequired
 };
@@ -65,8 +66,6 @@ User.getInitialProps = async context => {
   console.log(context.query.id);
 
   //서버에서 넘겨받은 context 값을 Front에서 이용할 수 있는 값!!
-  return {
-    id: parseInt(context.query.id, 10)
-  };
+  return { id: parseInt(context.query.id, 10) };
 };
 export default User;

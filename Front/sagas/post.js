@@ -153,7 +153,7 @@ function* loadUserPosts(action) {
     const result = yield call(loadUserPostsAPI, action.data);
     yield put({
       type: LOAD_USER_POSTS_SUCCESS,
-      data: result.data
+      data: result.data~
     });
   } catch (e) {
     yield put({
@@ -166,6 +166,7 @@ function* loadUserPosts(action) {
 function* watchLoadUserPosts() {
   yield takeLatest(LOAD_USER_POSTS_REQUEST, loadUserPosts);
 }
+
 //////////////////////////////////////////////////////
 
 function loadHashtagPostsAPI(tag) {
@@ -283,7 +284,35 @@ function* watchUnlikePost() {
   yield takeLatest(UNLIKE_POST_REQUEST, unlikePost);
 }
 //////////////////////////////////////////////////////////
+function retweetAPI(postId) {
+  //Post 요청 시, data가 없어도 data 부분을 빈 객체로 보내기 
+  return axios.post(`/post/${postId}/retweet`, {}, {
+    withCredentials: true,
+  });
+}
 
+function* retweet(action) {
+  try {
+    const result = yield call(retweetAPI, action.data);
+    yield put({
+      type: RETWEET_SUCCESS,
+      data: result.data,
+    });
+  } catch (e) {
+    // console.error(e);
+    yield put({
+      type: RETWEET_FAILURE,
+      error: e,
+    });
+    alert(e.response && e.response.data);
+    //에러 정보 반환
+  }
+}
+
+function* watchRetweet() {
+  yield takeLatest(RETWEET_REQUEST, retweet);
+}
+//////////////////////////////////////////////////////////
 export default function* postSaga() {
   yield all([
     fork(watchLoadMainPosts),
@@ -294,6 +323,7 @@ export default function* postSaga() {
     fork(watchLoadUserPosts),
     fork(watchUploadImages),
     fork(watchLikePost),
-    fork(watchUnlikePost)
+    fork(watchUnlikePost),
+    fork(watchRetweet);
   ]);
 }
