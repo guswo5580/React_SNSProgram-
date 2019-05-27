@@ -75,7 +75,7 @@ PeaceOcean.getInitialProps = async context => {
   //Component의 props 해주는 역할!!!
 };
 
-//미들웨어 생성 예시
+// 커스텀 미들웨어 생성 예시
 // const middleware = store => next => action => {
 //   console.log(action); // 다른 작업들을 여기에
 //   next(action);
@@ -83,7 +83,14 @@ PeaceOcean.getInitialProps = async context => {
 
 const configureStore = (initialState, options) => {
   const sagaMiddleware = createSagaMiddleware();
-  const middlewares = [sagaMiddleware]; //미들웨어 삽입구간
+  const middlewares = [
+    sagaMiddleware,
+    store => next => action => {
+      //Redux Saga 에러 찾기(커스텀 미들웨어)
+      console.log(action);
+      next(action);
+    }
+  ]; //미들웨어 삽입구간
   const enhancer =
     process.env.NODE_ENV === "production" //미들웨어 합침
       ? compose(applyMiddleware(...middlewares)) //미들웨어 적용

@@ -1,24 +1,16 @@
-import React, { useEffect } from "react";
+import React from "react";
 import PropTypes from "prop-types";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { LOAD_HASHTAG_POSTS_REQUEST } from "../reducers/post";
 import PostCard from "../components/PostCard";
 
 //게시글에서 해시태그를 클릭하면 해시태그를 포함하고 있는 다른 게시글들이 나오는 페이지
-const Hashtag = ({ tag }) => {
-  const dispatch = useDispatch();
+const Hashtag = () => {
   const { mainPosts } = useSelector(state => state.post);
-
-  useEffect(() => {
-    dispatch({
-      type: LOAD_HASHTAG_POSTS_REQUEST,
-      data: tag
-    });
-  }, []);
 
   return (
     <div>
-      {console.log("렌더 페이지", mainPosts)}
+      {/* {console.log("렌더 페이지", mainPosts)} */}
       {mainPosts.map(c => (
         <PostCard key={+c.createdAt} post={c} />
       ))}
@@ -34,7 +26,12 @@ Hashtag.propTypes = {
 Hashtag.getInitialProps = async context => {
   // console.log(context.query.tag);
   //server.js 에서 받은 정보가 담기는 곳
-  return { tag: context.query.tag };
+  const tag = context.query.tag;
+  context.store.dispatch({
+    type: LOAD_HASHTAG_POSTS_REQUEST,
+    data: tag
+  });
+  return { tag };
 };
 //getInitialProps = 라이프 사이클의 일종
 //다른 어떤 사이클 보다 먼저 실행되고, 프론트&서버에서도 사용 가능

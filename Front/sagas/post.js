@@ -180,7 +180,8 @@ function* watchLoadUserPosts() {
 //////////////////////////////////////////////////////
 
 function loadHashtagPostsAPI(tag) {
-  return axios.get(`/hashtag/${tag}`);
+  return axios.get(`/hashtag/${encodeURIComponent(tag)}`);
+  //한글 error의 경우, Front와 back에서 encode -> decode 처리를 해준다
 }
 
 function* loadHashtagPosts(action) {
