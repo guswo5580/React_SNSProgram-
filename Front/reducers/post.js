@@ -1,3 +1,5 @@
+import produce from "immer";
+
 export const initialState = {
   mainPosts: [],
   imagePaths: [], //미리보기 이미지 경로
@@ -58,227 +60,161 @@ export const REMOVE_POST_SUCCESS = "REMOVE_POST_SUCCESS";
 export const REMOVE_POST_FAILURE = "REMOVE_POST_FAILURE";
 
 export default (state = initialState, action) => {
-  switch (action.type) {
-    case ADD_POST_REQUEST: {
-      return {
-        ...state,
-        isAddingPost: true,
-        addPostErrorReason: "",
-        postAdded: false
-      };
-    }
-    case ADD_POST_SUCCESS: {
-      return {
-        ...state,
-        isAddingPost: false,
-        mainPosts: [action.data, ...state.mainPosts],
-        postAdded: true,
-        imagePaths: [] //이미지 미리보기 초기화
-      };
-    }
-    case ADD_POST_FAILURE: {
-      return {
-        ...state,
-        isAddingPost: false,
-        addPostErrorReason: action.error
-      };
-    }
-    ////////////////////////////////
-    case ADD_COMMENT_REQUEST: {
-      return {
-        ...state,
-        isAddingComment: true,
-        addCommentErrorReason: "",
-        commentAdded: false
-      };
-    }
-    case ADD_COMMENT_SUCCESS: {
-      const postIndex = state.mainPosts.findIndex(
-        v => v.id === action.data.postId
-      );
-      const post = state.mainPosts[postIndex];
-      const Comments = [...post.Comments, action.data.comment];
-      const mainPosts = [...state.mainPosts];
-      mainPosts[postIndex] = { ...post, Comments };
-      return {
-        ...state,
-        isAddingComment: false,
-        mainPosts,
-        commentAdded: true
-      };
-    }
-    case ADD_COMMENT_FAILURE: {
-      return {
-        ...state,
-        isAddingComment: false,
-        addCommentErrorReason: action.error
-      };
-    }
-    ////////////////////////////////
-    case LOAD_COMMENTS_SUCCESS: {
-      const postIndex = state.mainPosts.findIndex(
-        v => v.id === action.data.postId
-      );
-      const post = state.mainPosts[postIndex];
-      const Comments = action.data.comments;
-      const mainPosts = [...state.mainPosts];
-      mainPosts[postIndex] = { ...post, Comments };
-      return {
-        ...state,
-        mainPosts
-      };
-    }
+  return produce(state, draft => {
+    switch (action.type) {
+      case ADD_POST_REQUEST: {
+        draft.isAddingPost = true;
+        draft.addingPostErrorReason = "";
+        draft.postAdded = false;
+        break;
+      }
+      case ADD_POST_SUCCESS: {
+        draft.isAddingPost = false;
+        draft.mainPosts.unshift(action.data);
+        draft.postAdded = true;
+        draft.imagePaths = []; //이미지 미리보기 초기화
+        break;
+      }
+      case ADD_POST_FAILURE: {
+        draft.isAddingPost = false;
+        draft.addPostErrorReason = action.error;
+        break;
+      }
+      ////////////////////////////////
+      case ADD_COMMENT_REQUEST: {
+        draft.isAddingComment = true;
+        draft.addCommentErrorReason = "";
+        draft.commentAdded = false;
+        break;
+      }
+      case ADD_COMMENT_SUCCESS: {
+        const postIndex = draft.mainPosts.findIndex(
+          v => v.id === action.data.postId
+        );
+        draft.mainPosts[postIndex].Comments.push(action.data.comment);
+        draft.isAddingComment = false;
+        draft.commentAdded = true;
+        break;
+      }
+      case ADD_COMMENT_FAILURE: {
+        draft.isAddingComment = false;
+        draft.addingPostErrorReason = action.error;
+        break;
+      }
+      ////////////////////////////////
+      case LOAD_COMMENTS_SUCCESS: {
+        const postIndex = draft.mainPosts.findIndex(
+          v => v.id === action.data.postId
+        );
+        draft.mainPosts[postIndex].Comments = action.data.comments;
+        break;
+      }
 
-    ////////////////////////////////
-    case LOAD_MAIN_POSTS_REQUEST:
-    case LOAD_HASHTAG_POSTS_REQUEST:
-    case LOAD_USER_POSTS_REQUEST: {
-      //같은 역할을 하는 경우 Case 문으로 엮어서 이용!!
-      return {
-        ...state,
-        mainPosts: action.lastId === 0 ? [] : state.mainPosts,
+      ////////////////////////////////
+      case LOAD_MAIN_POSTS_REQUEST:
+      case LOAD_HASHTAG_POSTS_REQUEST:
+      case LOAD_USER_POSTS_REQUEST: {
+        //같은 역할을 하는 경우 Case 문으로 엮어서 이용!!
+        draft.mainPosts = action.lastId === 0 ? [] : draft.mainPosts;
         //처음 게시글을 불러올 때는 빈 객체부터 시작
         //게시글을 이어서 받을 때는 기존 post를 유지한 채로
-        hasMorePost: action.lastId ? state.hasMorePost : true
+        draft.hasMorePost = action.lastId ? draft.hasMorePost : true;
         //스크롤 기능을 막지 않으면 계속 REQUEST가 일어남
         //불러올 게시글이 없으면 스크롤 기능 비활성화
-      };
-    }
-    case LOAD_MAIN_POSTS_SUCCESS:
-    case LOAD_HASHTAG_POSTS_SUCCESS:
-    case LOAD_USER_POSTS_SUCCESS: {
-      return {
-        ...state,
-        mainPosts: state.mainPosts.concat(action.data),
-        //기존 게시글 위로 덮어쓰기
-        hasMorePost: action.data.length === 10
+        break;
+      }
+      case LOAD_MAIN_POSTS_SUCCESS:
+      case LOAD_HASHTAG_POSTS_SUCCESS:
+      case LOAD_USER_POSTS_SUCCESS: {
+        action.data.forEach(d => {
+          draft.mainPosts.push(d);
+          //기존 게시글 위로 덮어쓰기
+        });
+        draft.hasMorePost = action.data.length === 10;
         //현재 렌더링한 게시글이 10개가 되지 않는다면
         //hasMorePost는 false가 되므로 스크롤링 방지
-      };
+        break;
+      }
+      case LOAD_MAIN_POSTS_FAILURE:
+      case LOAD_HASHTAG_POSTS_FAILURE:
+      case LOAD_USER_POSTS_FAILURE: {
+        break;
+      }
+      ////////////////////////////////
+      case UPLOAD_IMAGES_REQUEST: {
+        break;
+      }
+      case UPLOAD_IMAGES_SUCCESS: {
+        action.data.forEach(p => {
+          draft.imagePaths.push(p);
+        });
+        break;
+      }
+      case UPLOAD_IMAGES_FAILURE: {
+        break;
+      }
+      ////////////////////////////////
+      case REMOVE_IMAGE: {
+        const index = draft.imagePaths.findIndex((v, i) => i === action.index);
+        draft.imagePaths.splice(index, 1);
+        break;
+      }
+      ////////////////////////////////
+      case LIKE_POST_REQUEST: {
+        break;
+      }
+      case LIKE_POST_SUCCESS: {
+        const postIndex = draft.mainPosts.findIndex(
+          v => v.id === action.data.postId
+        );
+        draft.mainPosts[postIndex].Likers.unshift({ id: action.data.userId });
+        break;
+      }
+      case LIKE_POST_FAILURE: {
+        break;
+      }
+      case UNLIKE_POST_REQUEST: {
+        break;
+      }
+      case UNLIKE_POST_SUCCESS: {
+        const postIndex = draft.mainPosts.findIndex(
+          v => v.id === action.data.postId
+        );
+        const likeIndex = draft.mainPosts[postIndex].Likers.findIndex(
+          v => v.id === action.data.userId
+        );
+        draft.mainPosts[postIndex].Likers.splice(likeIndex, 1);
+        break;
+      }
+      case UNLIKE_POST_FAILURE: {
+        break;
+      }
+      ////////////////////////////////////////////
+      case RETWEET_REQUEST: {
+        break;
+      }
+      case RETWEET_SUCCESS: {
+        draft.mainPosts.unshift(action.data);
+        break;
+      }
+      case RETWEET_FAILURE: {
+        break;
+      }
+      ////////////////////////////////////////////
+      case REMOVE_POST_REQUEST: {
+        break;
+      }
+      case REMOVE_POST_SUCCESS: {
+        const index = draft.mainPosts.findIndex(v => v.id === action.data);
+        draft.mainPosts.splice(index, 1);
+        break;
+      }
+      case REMOVE_POST_FAILURE: {
+        break;
+      }
+      default: {
+        break;
+      }
     }
-    case LOAD_MAIN_POSTS_FAILURE:
-    case LOAD_HASHTAG_POSTS_FAILURE:
-    case LOAD_USER_POSTS_FAILURE: {
-      return {
-        ...state
-      };
-    }
-    ////////////////////////////////
-    case UPLOAD_IMAGES_REQUEST: {
-      return {
-        ...state
-      };
-    }
-    case UPLOAD_IMAGES_SUCCESS: {
-      return {
-        ...state,
-        imagePaths: [...state.imagePaths, ...action.data]
-        //선택한 이미지 경로에 action으로 서버에서 받은 것을 추가로 선택 가능
-        //Ex 사진 한장만 보내려고 했다가 --- 여러장을 보내려해도
-        //기존의 imagePath와 같이 보내므로 하나로 보내는 것으로 인식
-      };
-    }
-    case UPLOAD_IMAGES_FAILURE: {
-      return {
-        ...state
-      };
-    }
-    ////////////////////////////////
-    case REMOVE_IMAGE: {
-      return {
-        ...state,
-        imagePaths: state.imagePaths.filter((v, i) => i !== action.index)
-        //선택한 index 값을 뺀 나머지만 filter로 거르기
-      };
-    }
-    ////////////////////////////////
-    case LIKE_POST_REQUEST: {
-      return {
-        ...state
-      };
-    }
-    case LIKE_POST_SUCCESS: {
-      const postIndex = state.mainPosts.findIndex(
-        v => v.id === action.data.postId
-      );
-      const post = state.mainPosts[postIndex];
-      const Likers = [{ id: action.data.userId }, ...post.Likers];
-      //좋아요 목록에 내 정보 추가
-      const mainPosts = [...state.mainPosts];
-      mainPosts[postIndex] = { ...post, Likers };
-      //mainPosts 불변성확립
-      return {
-        ...state,
-        mainPosts
-      };
-    }
-    case LIKE_POST_FAILURE: {
-      return {
-        ...state
-      };
-    }
-    case UNLIKE_POST_REQUEST: {
-      return {
-        ...state
-      };
-    }
-    case UNLIKE_POST_SUCCESS: {
-      const postIndex = state.mainPosts.findIndex(
-        v => v.id === action.data.postId
-      );
-      const post = state.mainPosts[postIndex];
-      const Likers = post.Likers.filter(v => v.id !== action.data.userId);
-      //필터링으로 목록에서 내 id 삭제
-      const mainPosts = [...state.mainPosts];
-      mainPosts[postIndex] = { ...post, Likers };
-      return {
-        ...state,
-        mainPosts
-      };
-    }
-    case UNLIKE_POST_FAILURE: {
-      return {
-        ...state
-      };
-    }
-    ////////////////////////////////////////////
-    case RETWEET_REQUEST: {
-      return {
-        ...state
-      };
-    }
-    case RETWEET_SUCCESS: {
-      return {
-        ...state,
-        mainPosts: [action.data, ...state.mainPosts]
-      };
-    }
-    case RETWEET_FAILURE: {
-      return {
-        ...state
-      };
-    }
-    ////////////////////////////////////////////
-    case REMOVE_POST_REQUEST: {
-      return {
-        ...state
-      };
-    }
-    case REMOVE_POST_SUCCESS: {
-      return {
-        ...state,
-        mainPosts: state.mainPosts.filter(v => v.id !== action.data)
-      };
-    }
-    case REMOVE_POST_FAILURE: {
-      return {
-        ...state
-      };
-    }
-    default: {
-      return {
-        ...state
-      };
-    }
-  }
+  });
 };
