@@ -17,9 +17,6 @@ const Hashtag = () => {
     </div>
   );
 };
-Hashtag.propTypes = {
-  tag: PropTypes.string.isRequired
-};
 
 //Hashtag = _app.js 의 context 내부의 Component로 전달됨!!
 //context = _app.js 의 ctx

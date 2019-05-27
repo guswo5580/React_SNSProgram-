@@ -209,7 +209,7 @@ function* watchUnfollow() {
 ////////////////////////////////////////////////////
 function loadFollowersAPI(userId) {
   //프로필 페이지 팔로워 목록
-  return axios.get(`/user/${userId}/followers`, {
+  return axios.get(`/user/${userId || 0}/followers`, {
     withCredentials: true
   });
 }
@@ -237,8 +237,8 @@ function* watchLoadFollowers() {
 }
 ////////////////////////////////////////////////////
 function loadFollowingsAPI(userId) {
-  //프로필 페이지 팔로잉 목록
-  return axios.get(`/user/${userId}/followings`, {
+  //프로필 페이지 팔로잉 목록, userId가 null일 경우 기본값으로 0을 삽입
+  return axios.get(`/user/${userId || 0}/followings`, {
     withCredentials: true
   });
 }

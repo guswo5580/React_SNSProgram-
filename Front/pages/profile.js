@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback } from "react";
+import React, { useCallback } from "react";
 import { Button, List, Card, Icon } from "antd";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -10,31 +10,11 @@ import {
 import { LOAD_USER_POSTS_REQUEST } from "../reducers/post";
 import PostCard from "../components/PostCard";
 import NicknameEditForm from "../components/NicknameEditFrom";
+
 const Profile = () => {
   const dispatch = useDispatch();
-  const { me, followingList, followerList } = useSelector(state => state.user);
+  const { followingList, followerList } = useSelector(state => state.user);
   const { mainPosts } = useSelector(state => state.post);
-
-  useEffect(() => {
-    if (me) {
-      //내가 로그인 했을 때
-      dispatch({
-        //팔로워 목록 불러오기
-        type: LOAD_FOLLOWERS_REQUEST,
-        data: me.id
-      });
-      dispatch({
-        //팔로잉 목록 불러오기
-        type: LOAD_FOLLOWINGS_REQUEST,
-        data: me.id
-      });
-      dispatch({
-        //내 게시글 목록 불러오기
-        type: LOAD_USER_POSTS_REQUEST,
-        data: me.id
-      });
-    }
-  }, [me && me.id]);
 
   const onUnfollow = useCallback(
     userId => () => {
@@ -111,4 +91,19 @@ const Profile = () => {
   );
 };
 
+Profile.getInitialProps = async context => {
+  const state = context.store.getState();
+  context.store.dispatch({
+    type: LOAD_FOLLOWERS_REQUEST,
+    data: state.user.me && state.user.me.id
+  });
+  context.store.dispatch({
+    type: LOAD_FOLLOWINGS_REQUEST,
+    data: state.user.me && state.user.me.id
+  });
+  context.store.dispatch({
+    type: LOAD_USER_POSTS_REQUEST,
+    data: state.user.me && state.user.me.id
+  });
+};
 export default Profile;
