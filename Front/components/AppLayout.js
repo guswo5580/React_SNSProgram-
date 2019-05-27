@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import Link from "next/link"; //Router 로 전환되는 것을 next/link를 통해 설정
 import PropTypes from "prop-types";
 import { Col, Input, Menu, Row } from "antd";
@@ -7,21 +7,10 @@ import { Col, Input, Menu, Row } from "antd";
 import LoginForm from "./LoginForm";
 import UserProfile from "./UserProfile";
 
-import { useSelector, useDispatch } from "react-redux";
-import { LOAD_USER_REQUEST } from "../reducers/user";
+import { useSelector } from "react-redux";
 
 const AppLayout = ({ children }) => {
   const { me } = useSelector(state => state.user);
-  const dispatch = useDispatch();
-
-  useEffect(() => {
-    if (!me) {
-      //유저 정보가 존재하지 않을 때, LOAD_USER_REQUEST요청을 보냄
-      dispatch({
-        type: LOAD_USER_REQUEST
-      });
-    }
-  }, []);
 
   return (
     <div>

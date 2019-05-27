@@ -5,10 +5,13 @@ import withRedux from "next-redux-wrapper";
 import { applyMiddleware, compose, createStore } from "redux";
 import { Provider } from "react-redux";
 import createSagaMiddleware from "redux-saga";
-
+import withReduxSaga from "next-redux-saga";
 import AppLayout from "../components/AppLayout";
 import reducer from "../reducers";
 import rootSaga from "../sagas";
+import axios from "axios";
+
+import LOAD_USER_REQUEST from "../reducers/user";
 
 const PeaceOcean = ({ Component, store, pageProps }) => {
   //Component를 props로 전달
@@ -51,9 +54,23 @@ PeaceOcean.propTypes = {
 PeaceOcean.getInitialProps = async context => {
   const { ctx } = context;
   let pageProps = {};
+
+  const state = ctx.store.getState();
+  const cookie = ctx.isServer ? ctx.req.headers.cookie : "";
+  if (ctx.isServer && cookie) {
+    axios.defaults.headers.Cookie = cookie;
+    //모든 axios에 대해 적용
+  }
+  if (!state.user.me) {
+    ctx.store.dispatch({
+      type: LOAD_USER_REQUEST
+    });
+  }
+
   if (context.Component.getInitialProps) {
     pageProps = await context.Component.getInitialProps(ctx);
   }
+
   return { pageProps };
   //Component의 props 해주는 역할!!!
 };
@@ -79,9 +96,9 @@ const configureStore = (initialState, options) => {
         );
   const store = createStore(reducer, initialState, enhancer);
   //store = state + reducer 인 것으로 선언 & 붙임
-  sagaMiddleware.run(rootSaga);
+  store.sagaTask = sagaMiddleware.run(rootSaga);
   //생성한 saga미들웨어를 rootSaga를 통해 run
   return store;
 };
 
-export default withRedux(configureStore)(PeaceOcean);
+export default withRedux(configureStore)(withReduxSaga)(PeaceOcean);

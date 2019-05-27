@@ -6,7 +6,6 @@ import PostCard from "../components/PostCard";
 
 //게시글에서 해시태그를 클릭하면 해시태그를 포함하고 있는 다른 게시글들이 나오는 페이지
 const Hashtag = ({ tag }) => {
-  console.log("해쉬 태그 전송", tag);
   const dispatch = useDispatch();
   const { mainPosts } = useSelector(state => state.post);
 
@@ -19,9 +18,10 @@ const Hashtag = ({ tag }) => {
 
   return (
     <div>
-      {mainPosts.map(c => {
-        <PostCard key={+c.createdAt} post={c} />;
-      })}
+      {console.log("렌더 페이지", mainPosts)}
+      {mainPosts.map(c => (
+        <PostCard key={+c.createdAt} post={c} />
+      ))}
     </div>
   );
 };

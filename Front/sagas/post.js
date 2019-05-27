@@ -190,6 +190,7 @@ function* loadHashtagPosts(action) {
       type: LOAD_HASHTAG_POSTS_SUCCESS,
       data: result.data
     });
+    console.log(result.data);
   } catch (e) {
     yield put({
       type: LOAD_HASHTAG_POSTS_FAILURE,
