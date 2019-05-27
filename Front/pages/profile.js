@@ -93,6 +93,7 @@ const Profile = () => {
 
 Profile.getInitialProps = async context => {
   const state = context.store.getState();
+  //LOAD_USERS_SUCCESS 가 완료 되기 이전에 실행되는 문제 발생!!
   context.store.dispatch({
     type: LOAD_FOLLOWERS_REQUEST,
     data: state.user.me && state.user.me.id

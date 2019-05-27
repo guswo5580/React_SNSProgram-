@@ -9,12 +9,6 @@ const Home = () => {
   //리렌더링의 효율에 따라 selector를 세분화하여 나누어 주는 것이 좋다
   const { me } = useSelector(state => state.user);
   const { mainPosts } = useSelector(state => state.post);
-  // const dispatch = useDispatch();
-  // useEffect(() => {
-  //   dispatch({
-  //     type: LOAD_MAIN_POSTS_REQUEST
-  //   });
-  // }, []);
 
   return (
     <div>

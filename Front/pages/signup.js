@@ -85,6 +85,11 @@ const Signup = () => {
     setTerm(e.target.checked);
   }, []);
 
+  if (me) {
+    //로그인이 되어있으면 회원가입 화면 자체를 보여주지 않도록!!
+    return null;
+  }
+
   return (
     <>
       <Form onSubmit={onSubmit} style={{ padding: 10 }}>
