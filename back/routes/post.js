@@ -220,7 +220,7 @@ router.post('/:id/retweet', isLoggedIn, async (req, res, next) => {
     const retweet = await db.Post.create({
       UserId: req.user.id,
       RetweetId: retweetTargetId,
-      content: 'retweet',
+      content: '원본 게시글이 삭제되었습니다',
     });
     
     //리트윗을 한 게시글에 이미 저정되어 있는 글의 정보를 가져옴

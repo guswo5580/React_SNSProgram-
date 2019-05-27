@@ -7,7 +7,8 @@ export const initialState = {
 
   isAddingComment: false, //댓글 업로드 중
   addCommentErrorReason: "", //댓글 업로드 실패 이유
-  commentAdded: false //댓글 업로드 성공
+  commentAdded: false, //댓글 업로드 성공
+  hasMorePost: false
 };
 
 export const LOAD_MAIN_POSTS_REQUEST = "LOAD_MAIN_POSTS_REQUEST";
@@ -135,7 +136,12 @@ export default (state = initialState, action) => {
       //같은 역할을 하는 경우 Case 문으로 엮어서 이용!!
       return {
         ...state,
-        mainPosts: []
+        mainPosts: action.lastId === 0 ? [] : state.mainPosts,
+        //처음 게시글을 불러올 때는 빈 객체부터 시작
+        //게시글을 이어서 받을 때는 기존 post를 유지한 채로
+        hasMorePost: action.lastId ? state.hasMorePost : true
+        //스크롤 기능을 막지 않으면 계속 REQUEST가 일어남
+        //불러올 게시글이 없으면 스크롤 기능 비활성화
       };
     }
     case LOAD_MAIN_POSTS_SUCCESS:
@@ -143,7 +149,11 @@ export default (state = initialState, action) => {
     case LOAD_USER_POSTS_SUCCESS: {
       return {
         ...state,
-        mainPosts: action.data
+        mainPosts: state.mainPosts.concat(action.data),
+        //기존 게시글 위로 덮어쓰기
+        hasMorePost: action.data.length === 10
+        //현재 렌더링한 게시글이 10개가 되지 않는다면
+        //hasMorePost는 false가 되므로 스크롤링 방지
       };
     }
     case LOAD_MAIN_POSTS_FAILURE:

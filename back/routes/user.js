@@ -6,10 +6,11 @@ const {isLoggedIn} = require('./middleware');
 
 const router = express.Router();
 
-router.get('/', isLoggedIn, async (req, res) => { //로그인 시 자동으로 내 정보 가져오기
+router.get('/', isLoggedIn, async (req, res) => { 
+  //로그인 시 자동으로 내 정보 가져오기
   try{
     const FullUser = await db.User.findOne({
-      where : {id : req.user.id},
+      where : {id : req.user.id}, 
       include : [{
         model:db.Post,
         as : 'Posts',
@@ -125,7 +126,6 @@ router.post('/login', (req, res, next) => { // POST /api/user/login
           }],
           attributes: ['id', 'nickname', 'userId'],
         });
-        console.log(fullUser);
         return res.json(fullUser);
       } catch (e) {
         next(e);
@@ -155,7 +155,6 @@ router.get('/:id/posts', async (req, res, next) => {
       }],
     });
     res.json(posts);
-    console.log("Send User", posts);
   } catch (e) {
     console.error(e);
     next(e);
@@ -197,6 +196,8 @@ router.get('/:id/followings', isLoggedIn, async (req, res, next) => {
     });
     const followers = await user.getFollowings({
       attributes: ['id', 'nickname'],
+      limit : parseInt(req.query.limit, 10),
+      offset : parseInt(req.query.offset, 10)
     });
     res.json(followers);
   } catch (e) {
@@ -213,6 +214,8 @@ router.get('/:id/followers', isLoggedIn, async (req, res, next) => {
     });
     const followers = await user.getFollowers({
       attributes: ['id', 'nickname'],
+      limit : parseInt(req.query.limit, 10),
+      offset : parseInt(req.query.offset, 10)
     });
     res.json(followers);
   } catch (e) {

@@ -1,5 +1,4 @@
 import React from "react";
-import PropTypes from "prop-types";
 import { useSelector } from "react-redux";
 import { Avatar, Card } from "antd";
 import { LOAD_USER_POSTS_REQUEST } from "../reducers/post";

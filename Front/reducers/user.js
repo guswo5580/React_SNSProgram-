@@ -12,7 +12,9 @@ export const initialState = {
   followerList: [], // 팔로워 리스트
   userInfo: null, // 다른 사람의 정보
   isEditingNickname: false, // 이름 변경 중
-  editNicknameErrorReason: "" // 이름 변경 실패 사유
+  editNicknameErrorReason: "", // 이름 변경 실패 사유
+  hasMoreFollower: false, //페이지네이션 버튼 유무
+  hasMoreFollowing: false //페이지네이션 버튼 유무
 };
 
 // 액션의 이름 - saga로 처리할 부분
@@ -129,9 +131,15 @@ export default (state = initialState, action) => {
       };
     }
     case LOAD_USER_SUCCESS: {
+      if (action.me) {
+        return {
+          ...state,
+          me: action.data
+        };
+      }
       return {
         ...state,
-        me: action.data
+        userInfo: action.data
       };
     }
     case LOAD_USER_FAILURE: {
@@ -208,13 +216,22 @@ export default (state = initialState, action) => {
     /////////////////////////////////
     case LOAD_FOLLOWERS_REQUEST: {
       return {
-        ...state
+        ...state,
+        hasMoreFollower: action.offset ? state.hasMoreFollower : true
+        //처음 action.offset === 0 (false) -> true가 반환!!!
+        //action.offset이 수행될 때는 남은 Data가 있다는 의미 -> true를 계속 유지
+        //따라서 데이터가 있다면 현 상태 유지, 없다면 상태를 변화 -> false로 변화
       };
     }
     case LOAD_FOLLOWERS_SUCCESS: {
       return {
         ...state,
-        followerList: action.data
+        followerList: state.followerList.concat(action.data),
+        //기존의 것에 덮어쓰기
+        hasMoreFollower: action.data.length === 3
+        //limit을 3으로 지정했으므로 Data가 1, 2개이면 더 이상 data가 없는 것
+        //Data가 3개가 되면 이후에 Data의 유무가 확실치 않게된다
+        //1, 2개가 남은 상태라면 hasMoreFollower는 false로 변하게 된다
       };
     }
     case LOAD_FOLLOWERS_FAILURE: {
@@ -225,13 +242,15 @@ export default (state = initialState, action) => {
     /////////////////////////////////
     case LOAD_FOLLOWINGS_REQUEST: {
       return {
-        ...state
+        ...state,
+        hasMoreFollowing: action.offset ? state.hasMoreFollowing : true
       };
     }
     case LOAD_FOLLOWINGS_SUCCESS: {
       return {
         ...state,
-        followingList: action.data
+        followingList: state.followingList.concat(action.data),
+        hasMoreFollowing: action.data.length === 3
       };
     }
     case LOAD_FOLLOWINGS_FAILURE: {

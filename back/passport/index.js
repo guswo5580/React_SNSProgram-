@@ -12,8 +12,22 @@ module.exports = () => {
     try {
       const user = await db.User.findOne({
         where: { id },
+        include: [{
+          model: db.Post,
+          as: 'Posts',
+          attributes: ['id'],
+        }, {
+          model: db.User,
+          as: 'Followings',
+          attributes: ['id'],
+        }, {
+          model: db.User,
+          as: 'Followers',
+          attributes: ['id'],
+        }],
       });
       return done(null, user); // req.user
+      console.log("Send Data", user);
     } catch (e) {
       console.error(e);
       return done(e);

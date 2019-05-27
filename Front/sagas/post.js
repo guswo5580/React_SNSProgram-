@@ -1,4 +1,4 @@
-import { all, fork, takeLatest, put, call } from "redux-saga/effects";
+import { all, fork, takeLatest, put, call, throttle } from "redux-saga/effects";
 import axios from "axios";
 import {
   ADD_POST_FAILURE,
@@ -71,13 +71,14 @@ function* watchAddPost() {
 }
 
 ////////////////////////////////////////////////////////
-function loadMainPostsAPI() {
-  return axios.get("/posts");
+function loadMainPostsAPI(lastId = 0, limit = 10) {
+  //lastId = 0 -> 처음부터 Data를 가져온다는 의미
+  return axios.get(`/posts?lastId=${lastId}&limit=${limit}`);
 }
 
-function* loadMainPosts() {
+function* loadMainPosts(action) {
   try {
-    const result = yield call(loadMainPostsAPI);
+    const result = yield call(loadMainPostsAPI, action.lastId);
     yield put({
       type: LOAD_MAIN_POSTS_SUCCESS,
       data: result.data
@@ -91,7 +92,7 @@ function* loadMainPosts() {
 }
 
 function* watchLoadMainPosts() {
-  yield takeLatest(LOAD_MAIN_POSTS_REQUEST, loadMainPosts);
+  yield throttle(2000, LOAD_MAIN_POSTS_REQUEST, loadMainPosts);
 }
 
 //////////////////////////////////////////////////////////////////
@@ -182,14 +183,16 @@ function* watchLoadUserPosts() {
 
 //////////////////////////////////////////////////////
 
-function loadHashtagPostsAPI(tag) {
-  return axios.get(`/hashtag/${encodeURIComponent(tag)}`);
+function loadHashtagPostsAPI(tag, lastId) {
+  return axios.get(
+    `/hashtag/${encodeURIComponent(tag)}?lastId=${lastId}&limit=10`
+  );
   //한글 error의 경우, Front와 back에서 encode -> decode 처리를 해준다
 }
 
 function* loadHashtagPosts(action) {
   try {
-    const result = yield call(loadHashtagPostsAPI, action.data);
+    const result = yield call(loadHashtagPostsAPI, action.data, action.lastId);
     yield put({
       type: LOAD_HASHTAG_POSTS_SUCCESS,
       data: result.data

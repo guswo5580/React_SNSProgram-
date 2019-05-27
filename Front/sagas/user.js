@@ -118,20 +118,24 @@ function* watchLogOut() {
 }
 
 ///////////////////////////////////////
-function loadUserAPI() {
-  return axios.get("/user", { withCredentials: true });
-  //쿠키가 있으면 쿠키를 이용하여 요청
+function loadUserAPI(userId) {
+  return axios.get(userId ? `/user/${userId}` : "/user/", {
+    withCredentials: true
+  });
+  //클라이언트 요청 시, 브라우저 -> 쿠키를 같이 보내 요청
+  //서버 사이드 요청 시, _app.js에서 axios 선언을 이용 쿠키를 담아 요청
 }
 
-function* loadUser() {
+function* loadUser(action) {
   try {
-    const result = yield call(loadUserAPI);
+    const result = yield call(loadUserAPI, action.data);
     yield put({
       type: LOAD_USER_SUCCESS,
-      data: result.data
+      data: result.data,
+      me: !action.data
     });
   } catch (e) {
-    // loginAPI 실패
+    console.error(e);
     yield put({
       type: LOAD_USER_FAILURE,
       error: e
@@ -207,16 +211,19 @@ function* watchUnfollow() {
   yield takeEvery(UNFOLLOW_USER_REQUEST, unfollow);
 }
 ////////////////////////////////////////////////////
-function loadFollowersAPI(userId) {
+function loadFollowersAPI(userId, offset = 0, limit = 3) {
   //프로필 페이지 팔로워 목록
-  return axios.get(`/user/${userId || 0}/followers`, {
-    withCredentials: true
-  });
+  return axios.get(
+    `/user/${userId || 0}/followers?offset=${offset}&limit=${limit}`,
+    {
+      withCredentials: true
+    }
+  );
 }
 
 function* loadFollowers(action) {
   try {
-    const result = yield call(loadFollowersAPI, action.data);
+    const result = yield call(loadFollowersAPI, action.data, action.offset);
     yield put({
       // put은 dispatch 동일
       type: LOAD_FOLLOWERS_SUCCESS,
@@ -236,16 +243,19 @@ function* watchLoadFollowers() {
   yield takeEvery(LOAD_FOLLOWERS_REQUEST, loadFollowers);
 }
 ////////////////////////////////////////////////////
-function loadFollowingsAPI(userId) {
+function loadFollowingsAPI(userId, offset = 0, limit = 3) {
   //프로필 페이지 팔로잉 목록, userId가 null일 경우 기본값으로 0을 삽입
-  return axios.get(`/user/${userId || 0}/followings`, {
-    withCredentials: true
-  });
+  return axios.get(
+    `/user/${userId || 0}/followings?offset=${offset}&limit=${limit}`,
+    {
+      withCredentials: true
+    }
+  );
 }
 
 function* loadFollowings(action) {
   try {
-    const result = yield call(loadFollowingsAPI, action.data);
+    const result = yield call(loadFollowingsAPI, action.data, action.offset);
     yield put({
       // put은 dispatch 동일
       type: LOAD_FOLLOWINGS_SUCCESS,

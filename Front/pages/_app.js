@@ -2,10 +2,10 @@ import React from "react";
 import Head from "next/head";
 import PropTypes from "prop-types";
 import withRedux from "next-redux-wrapper";
+import withReduxSaga from "next-redux-saga";
 import { applyMiddleware, compose, createStore } from "redux";
 import { Provider } from "react-redux";
 import createSagaMiddleware from "redux-saga";
-import withReduxSaga from "next-redux-saga";
 import AppLayout from "../components/AppLayout";
 import reducer from "../reducers";
 import rootSaga from "../sagas";
@@ -49,17 +49,19 @@ PeaceOcean.propTypes = {
   store: PropTypes.object.isRequired,
   pageProps: PropTypes.object.isRequired
 };
+
 //Next - Express의 동적 라우팅에서 전달 받은 값을
 //각 Component로 보내는 중간 다리 역할
 PeaceOcean.getInitialProps = async context => {
-  const { ctx } = context;
+  const { ctx, Component } = context;
   let pageProps = {};
 
   const state = ctx.store.getState();
   const cookie = ctx.isServer ? ctx.req.headers.cookie : "";
+  // console.log("cookies", cookie);
   if (ctx.isServer && cookie) {
     axios.defaults.headers.Cookie = cookie;
-    //모든 axios에 대해 적용
+    //모든 axios에 적용
   }
   if (!state.user.me) {
     ctx.store.dispatch({
@@ -67,12 +69,11 @@ PeaceOcean.getInitialProps = async context => {
     });
   }
 
-  if (context.Component.getInitialProps) {
-    pageProps = await context.Component.getInitialProps(ctx);
+  if (Component.getInitialProps) {
+    pageProps = await Component.getInitialProps(ctx);
+    //Component의 props 해주는 역할!!!
   }
-
   return { pageProps };
-  //Component의 props 해주는 역할!!!
 };
 
 // 커스텀 미들웨어 생성 예시
@@ -86,8 +87,8 @@ const configureStore = (initialState, options) => {
   const middlewares = [
     sagaMiddleware,
     store => next => action => {
-      //Redux Saga 에러 찾기(커스텀 미들웨어)
-      console.log(action);
+      // console.log("STORE!!", store);
+      // console.log(action);
       next(action);
     }
   ]; //미들웨어 삽입구간
@@ -108,4 +109,4 @@ const configureStore = (initialState, options) => {
   return store;
 };
 
-export default withRedux(configureStore)(withReduxSaga)(PeaceOcean);
+export default withRedux(configureStore)(withReduxSaga(PeaceOcean));

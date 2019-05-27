@@ -1,12 +1,35 @@
-import React from "react";
+import React, { useCallback, useEffect } from "react";
 import PropTypes from "prop-types";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { LOAD_HASHTAG_POSTS_REQUEST } from "../reducers/post";
 import PostCard from "../components/PostCard";
 
 //게시글에서 해시태그를 클릭하면 해시태그를 포함하고 있는 다른 게시글들이 나오는 페이지
-const Hashtag = () => {
-  const { mainPosts } = useSelector(state => state.post);
+const Hashtag = ({ tag }) => {
+  const { mainPosts, hasMorePost } = useSelector(state => state.post);
+  const dispatch = useDispatch();
+
+  const onScroll = useCallback(() => {
+    if (
+      window.scrollY + document.documentElement.clientHeight >
+      document.documentElement.scrollHeight - 300
+    ) {
+      if (hasMorePost) {
+        dispatch({
+          type: LOAD_HASHTAG_POSTS_REQUEST,
+          lastId: mainPosts[mainPosts.length - 1].id,
+          data: tag
+        });
+      }
+    }
+  }, [hasMorePost, mainPosts.length]);
+
+  useEffect(() => {
+    window.addEventListener("scroll", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+    };
+  }, [mainPosts.length]);
 
   return (
     <div>
@@ -17,7 +40,9 @@ const Hashtag = () => {
     </div>
   );
 };
-
+Hashtag.propTypes = {
+  tag: PropTypes.string.isRequired
+};
 //Hashtag = _app.js 의 context 내부의 Component로 전달됨!!
 //context = _app.js 의 ctx
 Hashtag.getInitialProps = async context => {
