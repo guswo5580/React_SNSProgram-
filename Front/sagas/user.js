@@ -43,8 +43,8 @@ function loginAPI(loginData) {
 
 function* login(action) {
   try {
-    const result = yield call(loginAPI, action.data); //call = 동기적 실행
-    // yield delay(2000);
+    const result = yield call(loginAPI, action.data);
+    //call = 동기적 실행
     yield put({
       //put = dispatch --- loginAPI 성공 시 실행
       type: LOG_IN_SUCCESS,
@@ -118,8 +118,10 @@ function* watchLogOut() {
 }
 
 ///////////////////////////////////////
-function loadUserAPI(userId) {
-  return axios.get(userId ? `/user/${userId}` : "/user/", {
+function loadUserAPI(id) {
+  //id가 있으면 user.js에서 보내는 신호(다른 사용자의 정보)
+  //id가 없으면 _app.js에서 보내는 신호(나의 정보)
+  return axios.get(id ? `/user/${id}` : "/user/", {
     withCredentials: true
   });
   //클라이언트 요청 시, 브라우저 -> 쿠키를 같이 보내 요청
@@ -225,12 +227,10 @@ function* loadFollowers(action) {
   try {
     const result = yield call(loadFollowersAPI, action.data, action.offset);
     yield put({
-      // put은 dispatch 동일
       type: LOAD_FOLLOWERS_SUCCESS,
       data: result.data
     });
   } catch (e) {
-    // loginAPI 실패
     console.error(e);
     yield put({
       type: LOAD_FOLLOWERS_FAILURE,
@@ -244,7 +244,7 @@ function* watchLoadFollowers() {
 }
 ////////////////////////////////////////////////////
 function loadFollowingsAPI(userId, offset = 0, limit = 3) {
-  //프로필 페이지 팔로잉 목록, userId가 null일 경우 기본값으로 0을 삽입
+  //프로필 페이지 팔로잉 목록
   return axios.get(
     `/user/${userId || 0}/followings?offset=${offset}&limit=${limit}`,
     {
@@ -257,12 +257,10 @@ function* loadFollowings(action) {
   try {
     const result = yield call(loadFollowingsAPI, action.data, action.offset);
     yield put({
-      // put은 dispatch 동일
       type: LOAD_FOLLOWINGS_SUCCESS,
       data: result.data
     });
   } catch (e) {
-    // loginAPI 실패
     console.error(e);
     yield put({
       type: LOAD_FOLLOWINGS_FAILURE,

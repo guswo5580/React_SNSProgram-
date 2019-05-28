@@ -30,7 +30,6 @@ const PostForm = () => {
         return alert("게시글을 작성해주세요");
         //return으로 중간에 끊기!!!
       }
-
       //Text와 Image를 FormData 형식으로 보내기
       const formData = new FormData();
       imagePaths.forEach(i => {
@@ -86,7 +85,7 @@ const PostForm = () => {
     >
       <Input.TextArea
         maxLength={140}
-        placeholder="어떤 신기한 일이 있었나요?"
+        placeholder="어떤 일이 있었나요?"
         value={text}
         onChange={onChangeText}
       />
@@ -118,7 +117,7 @@ const PostForm = () => {
                 alt={v}
               />
               <div>
-                <Button onClick={onRemoveImage(i)}>제거</Button>
+                <Button onClick={onRemoveImage(i)}>삭제</Button>
               </div>
             </div>
           );

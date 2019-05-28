@@ -62,6 +62,7 @@ const Signup = () => {
       return dispatch({
         type: SIGN_UP_REQUEST,
         data: {
+          //Passport에서 이용할 정보
           userId: id,
           password,
           nickname: nick

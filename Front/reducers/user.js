@@ -19,7 +19,7 @@ export const initialState = {
   hasMoreFollowing: false //페이지네이션 버튼 유무
 };
 
-// 액션의 이름 - saga로 처리할 부분
+// 액션의 이름
 export const SIGN_UP_REQUEST = "SIGN_UP_REQUEST";
 export const SIGN_UP_SUCCESS = "SIGN_UP_SUCCESS";
 export const SIGN_UP_FAILURE = "SIGN_UP_FAILURE";
@@ -166,6 +166,7 @@ export default (state = initialState, action) => {
       /////////////////////////////////
       case LOAD_FOLLOWERS_REQUEST: {
         draft.hasMoreFollower = action.offset ? draft.hasMoreFollower : true;
+        //처음 데이터를 가져올 때는 더보기 버튼을 보여주는 걸로
         //처음 action.offset === 0 (false) -> true가 반환!!!
         //action.offset이 수행될 때는 남은 Data가 있다는 의미 -> true를 계속 유지
         //따라서 데이터가 있다면 현 상태 유지, 없다면 상태를 변화 -> false로 변화

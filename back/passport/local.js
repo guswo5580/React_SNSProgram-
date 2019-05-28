@@ -7,7 +7,7 @@ module.exports = () => {
   passport.use(new LocalStrategy({
     usernameField: 'userId',
     passwordField: 'password',
-    //Front에서 넘어오는 정보와 변수명 일치
+    //Front(signUp.js)에서 넘어오는 정보와 변수명 일치
   }, async (userId, password, done) => {
     try {
       const user = await db.User.findOne({ where: { userId } });

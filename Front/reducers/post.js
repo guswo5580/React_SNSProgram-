@@ -111,10 +111,10 @@ export default (state = initialState, action) => {
       }
 
       ////////////////////////////////
+      //같은 역할을 하는 경우 Case 문으로 엮어서 이용!!
       case LOAD_MAIN_POSTS_REQUEST:
       case LOAD_HASHTAG_POSTS_REQUEST:
       case LOAD_USER_POSTS_REQUEST: {
-        //같은 역할을 하는 경우 Case 문으로 엮어서 이용!!
         draft.mainPosts = action.lastId === 0 ? [] : draft.mainPosts;
         //처음 게시글을 불러올 때는 빈 객체부터 시작
         //게시글을 이어서 받을 때는 기존 post를 유지한 채로

@@ -41,16 +41,16 @@ const Profile = () => {
     []
   );
 
-  const loadMoreFollwings = useCallback(() => {
+  const loadMoreFollowings = useCallback(() => {
     dispatch({
-      LOAD_FOLLOWINGS_REQUEST,
+      type: LOAD_FOLLOWINGS_REQUEST,
       offset: followingList.length
     });
   }, [followingList.length]);
 
   const loadMoreFollowers = useCallback(() => {
     dispatch({
-      LOAD_FOLLOWERS_REQUEST,
+      type: LOAD_FOLLOWERS_REQUEST,
       offset: followerList.length
     });
   }, [followerList.length]);
@@ -65,7 +65,7 @@ const Profile = () => {
         header={<div>팔로잉 목록</div>}
         loadMore={
           hasMoreFollowing && (
-            <Button style={{ width: "100%" }} onClick={loadMoreFollowers}>
+            <Button style={{ width: "100%" }} onClick={loadMoreFollowings}>
               더 보기
             </Button>
           )
@@ -91,7 +91,7 @@ const Profile = () => {
         header={<div>팔로워 목록</div>}
         loadMore={
           hasMoreFollower && (
-            <Button style={{ width: "100%" }} onClick={loadMoreFollwings}>
+            <Button style={{ width: "100%" }} onClick={loadMoreFollowers}>
               더 보기
             </Button>
           )
@@ -124,8 +124,9 @@ const Profile = () => {
 };
 
 Profile.getInitialProps = async context => {
-  const state = context.store.getState();
   //LOAD_USERS_SUCCESS 가 완료 되기 이전에 실행되는 문제 발생!!
+  const state = context.store.getState();
+  // 이 직전에 LOAD_USERS_REQUEST
   context.store.dispatch({
     type: LOAD_FOLLOWERS_REQUEST,
     data: state.user.me && state.user.me.id
@@ -138,5 +139,8 @@ Profile.getInitialProps = async context => {
     type: LOAD_USER_POSTS_REQUEST,
     data: state.user.me && state.user.me.id
   });
+
+  // 이 쯤에서 LOAD_USERS_SUCCESS 돼서 me가 생김.
 };
+
 export default Profile;

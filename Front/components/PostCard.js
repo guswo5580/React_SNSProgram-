@@ -29,15 +29,16 @@ import PostCardContent from "./PostCardContent";
 const PostCard = ({ post }) => {
   const [commentFormOpened, setCommentFormOpened] = useState(false);
   const [commentText, setCommentText] = useState("");
-
   const { me } = useSelector(state => state.user);
   const { commentAdded, isAddingComment } = useSelector(state => state.post);
   const dispatch = useDispatch();
 
+  const liked = me && post.Likers && post.Likers.find(v => v.id === me.id);
+  //Liker 배열 안에 나의 id 가 있는지를 확인하여 게시글에 대한 좋아요 여부 확인
+
   const onToggleComment = useCallback(() => {
     //댓글 창을 오픈 여부, 이전 state 값에 따라 열고 닫고
     setCommentFormOpened(prev => !prev);
-
     if (!commentFormOpened) {
       dispatch({
         type: LOAD_COMMENTS_REQUEST,
@@ -46,21 +47,22 @@ const PostCard = ({ post }) => {
     }
   }, []);
 
-  const onSubmitComment = useCallback(e => {
-    e.preventDefault();
-    if (!me) return alert("로그인이 필요합니다");
-
-    return dispatch(
-      {
+  const onSubmitComment = useCallback(
+    e => {
+      e.preventDefault();
+      if (!me) {
+        return alert("로그인이 필요합니다.");
+      }
+      return dispatch({
         type: ADD_COMMENT_REQUEST,
         data: {
           postId: post.id,
           content: commentText
         }
-      },
-      [me && me.id, commentText]
-    );
-  });
+      });
+    },
+    [me && me.id, commentText]
+  );
 
   useEffect(() => {
     setCommentText("");
@@ -71,8 +73,6 @@ const PostCard = ({ post }) => {
     setCommentText(e.target.value);
   });
 
-  const liked = me && post.Likers && post.Likers.find(v => v.id === me.id);
-  //Liker 배열 안에 나의 id 가 있는지를 확인하여 게시글에 대한 좋아요 여부 확인
   const onToggleLike = useCallback(() => {
     //좋아요 버튼 Toogle
     if (!me) {

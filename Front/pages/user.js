@@ -45,10 +45,6 @@ const User = () => {
   );
 };
 
-// User.propTypes = {
-//   id: PropTypes.number.isRequired
-// };
-
 User.getInitialProps = async context => {
   //console.log(context.query.id);
   //서버에서 넘겨받은 context 값을 Front에서 이용할 수 있는 값!!

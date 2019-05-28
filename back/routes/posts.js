@@ -1,18 +1,16 @@
 const express = require('express');
 const db = require('../models');
-
 const router = express.Router();
 
-//접속 시, 모든 게시글을 가져오기
-
-router.get('/', async (req, res, next) => { 
+router.get('/', async (req, res, next) => { // GET /api/posts
   try {
     let where = {};
-    if(parseInt(req.query.lastId, 10)){
+    if (parseInt(req.query.lastId, 10)) {
       where = {
-        id : {
-          [db.Sequelize.Op.lt] : parseInt(req.query.lastId, 10) //작은 것!! 
-        }
+        id: {
+          [db.Sequelize.Op.lt]: parseInt(req.query.lastId, 10),
+          //req.query.lastId 보다 작은을 나타내는 시퀄라이즈 op 
+        },
       };
     }
     const posts = await db.Post.findAll({
@@ -37,8 +35,9 @@ router.get('/', async (req, res, next) => {
           model: db.Image,
         }],
       }],
-      order: [['createdAt', 'DESC']], // DESC는 내림차순, ASC는 오름차순
-      limit : parseInt(req.query.limit, 10)
+      order: [['createdAt', 'DESC']], 
+      limit: parseInt(req.query.limit, 10),
+      //limit 설정 
     });
     res.json(posts);
   } catch (e) {
@@ -46,4 +45,5 @@ router.get('/', async (req, res, next) => {
     next(e);
   }
 });
+
 module.exports = router;
