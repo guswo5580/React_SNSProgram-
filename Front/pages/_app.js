@@ -6,46 +6,42 @@ import withReduxSaga from "next-redux-saga";
 import { applyMiddleware, compose, createStore } from "redux";
 import { Provider } from "react-redux";
 import createSagaMiddleware from "redux-saga";
+import axios from "axios";
+
 import AppLayout from "../components/AppLayout";
 import reducer from "../reducers";
 import rootSaga from "../sagas";
-import axios from "axios";
+import { LOAD_USER_REQUEST } from "../reducers/user";
 
-import LOAD_USER_REQUEST from "../reducers/user";
-
-const PeaceOcean = ({ Component, store, pageProps }) => {
-  //Component를 props로 전달
-  return (
-    <Provider store={store}>
-      <Head>
-        <title>PeaceOcean2</title>
-        <link
-          rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/antd/3.16.2/antd.css"
-        />
-        <link
-          rel="stylesheet"
-          type="text/css"
-          charSet="UTF-8"
-          href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.6.0/slick.min.css"
-        />
-        <link
-          rel="stylesheet"
-          type="text/css"
-          href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.6.0/slick-theme.min.css"
-        />
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/antd/3.16.2/antd.js" />
-      </Head>
-      {/* next 에서 넣어주는 props 
-        Head부분이 Component에 포함되어 AppLayout에 전달됨을 의미*/}
-      <AppLayout>
-        <Component {...pageProps} />
-      </AppLayout>
-    </Provider>
-  );
-};
+const PeaceOcean = ({ Component, store, pageProps }) => (
+  <Provider store={store}>
+    <Head>
+      <title>PeaceOcean2</title>
+      <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/antd/3.16.2/antd.css"
+      />
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/antd/3.16.2/antd.js" />
+      <link
+        rel="stylesheet"
+        type="text/css"
+        charSet="UTF-8"
+        href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.6.0/slick.min.css"
+      />
+      <link
+        rel="stylesheet"
+        type="text/css"
+        href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.6.0/slick-theme.min.css"
+      />
+    </Head>
+    <AppLayout>
+      <Component {...pageProps} />
+    </AppLayout>
+  </Provider>
+);
 PeaceOcean.propTypes = {
-  Component: PropTypes.elementType.isRequired, //jsx형식의 Component를 전달하는 경우
+  //jsx형식의 Component를 전달하는 경우
+  Component: PropTypes.elementType.isRequired,
   store: PropTypes.object.isRequired,
   pageProps: PropTypes.object.isRequired
 };
@@ -53,25 +49,27 @@ PeaceOcean.propTypes = {
 //Next - Express의 동적 라우팅에서 전달 받은 값을
 //각 Component로 보내는 중간 다리 역할
 PeaceOcean.getInitialProps = async context => {
+  // console.log(context);
   const { ctx, Component } = context;
   let pageProps = {};
 
-  const state = ctx.store.getState();
+  const state = ctx.store.getState(); //state 값 가져오기
   const cookie = ctx.isServer ? ctx.req.headers.cookie : "";
-  // console.log("cookies", cookie);
+  //서버 사이드의 요청이라면 쿠키를 가져오기
+  // console.log("cookie", cookie);
   if (ctx.isServer && cookie) {
     axios.defaults.headers.Cookie = cookie;
-    //모든 axios에 적용
   }
   if (!state.user.me) {
+    //me의 정보가 없다면
     ctx.store.dispatch({
       type: LOAD_USER_REQUEST
     });
   }
 
+  //_app.js 하위의 다른 컴포넌트에서 getInitialProps를 했을 경우 실행 구간
   if (Component.getInitialProps) {
     pageProps = await Component.getInitialProps(ctx);
-    //Component의 props 해주는 역할!!!
   }
   return { pageProps };
 };
@@ -87,20 +85,20 @@ const configureStore = (initialState, options) => {
   const middlewares = [
     sagaMiddleware,
     store => next => action => {
-      // console.log("STORE!!", store);
       // console.log(action);
       next(action);
     }
-  ]; //미들웨어 삽입구간
+  ];
+  //미들웨어 삽입구간
   const enhancer =
     process.env.NODE_ENV === "production" //미들웨어 합침
-      ? compose(applyMiddleware(...middlewares)) //미들웨어 적용
+      ? compose(applyMiddleware(...middlewares)) //미들웨어 추가
       : compose(
           applyMiddleware(...middlewares),
           !options.isServer &&
             window.__REDUX_DEVTOOLS_EXTENSION__ !== "undefined"
             ? window.__REDUX_DEVTOOLS_EXTENSION__()
-            : f => f //DevTools에 적용, 배포시 삭제
+            : f => f
         );
   const store = createStore(reducer, initialState, enhancer);
   //store = state + reducer 인 것으로 선언 & 붙임
