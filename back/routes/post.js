@@ -24,6 +24,26 @@ const upload = multer({
   limits: { fileSize: 20 * 1024 * 1024 }, //파일 사이즈 제한 옵션(byte 단위)
 });
 
+//게시글 하나 불러오기
+router.get('/:id', async (req, res, next) => {
+  try {
+    const post = await db.Post.findOne({
+      where: { id: req.params.id },
+      include: [{
+        model: db.User,
+        attributes: ['id', 'nickname'],
+      }, {
+        model: db.Image,
+      }],
+    });
+    res.json(post);
+  } catch (e) {
+    console.error(e);
+    next(e);
+  }
+});
+
+
 //게시글 작성
 router.post('/', isLoggedIn, upload.none(), async (req, res, next) => { // POST /api/post
   try {

@@ -38,6 +38,10 @@ app.prepare().then(() => {
     //params로 Data를 전달 ---> hashtag 내부에서 getInitialProps로 전달됨!!
   });
 
+  server.get("/post/:id", (req, res) => {
+    return app.render(req, res, "/post", { id: req.params.id });
+  });
+
   server.get("/user/:id", (req, res) => {
     return app.render(req, res, "/user", { id: req.params.id });
   });

@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback } from "react";
+import React, { useEffect, useCallback, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
 //component import
 import PostForm from "../components/PostForm";
@@ -10,6 +10,7 @@ const Home = () => {
   const { me } = useSelector(state => state.user);
   const { mainPosts, hasMorePost } = useSelector(state => state.post);
   const dispatch = useDispatch();
+  const countRef = useRef([]); //Front에서 request가 일어나는 횟수를 체크할 배열
 
   //Scroll 감지 - window 이벤트 리스너 이용
   const onScroll = useCallback(() => {
@@ -24,13 +25,19 @@ const Home = () => {
     ) {
       if (hasMorePost) {
         //게시글이 남아 있다면
-        dispatch({
-          //더 불러올 게시글이 있다면
-          type: LOAD_MAIN_POSTS_REQUEST,
-          lastId: mainPosts[mainPosts.length - 1].id
-          //현재 화면에 렌더링 된 마지막 게시글의 id를 가져와
-          //다음 게시글 요청의 기준점으로 잡는다
-        });
+        const lastId = mainPosts[mainPosts.length - 1].id;
+        if (!countRef.current.includes(lastId)) {
+          //countRef 배열 안에 lastId가 없으면 = 한 번도 실행되지 않았으면
+          dispatch({
+            //더 불러올 게시글이 있다면
+            type: LOAD_MAIN_POSTS_REQUEST,
+            lastId
+            //현재 화면에 렌더링 된 마지막 게시글의 id를 가져와
+            //다음 게시글 요청의 기준점으로 잡는다
+          });
+          countRef.current.push(lastId);
+          //lastId가 몇 번 호출되었는가 횟수를 저장
+        }
       }
     }
   }, [hasMorePost, mainPosts.length]);
