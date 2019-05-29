@@ -184,7 +184,7 @@ function* watchLoadUserPosts() {
 
 //////////////////////////////////////////////////////
 
-function loadHashtagPostsAPI(tag, lastId = 0) {
+function loadHashtagPostsAPI(tag, lastId) {
   return axios.get(
     `/hashtag/${encodeURIComponent(tag)}?lastId=${lastId}&limit=10`
   );
@@ -198,7 +198,6 @@ function* loadHashtagPosts(action) {
       type: LOAD_HASHTAG_POSTS_SUCCESS,
       data: result.data
     });
-    console.log(result.data); //제대로 들어옴!!
   } catch (e) {
     yield put({
       type: LOAD_HASHTAG_POSTS_FAILURE,
@@ -322,7 +321,7 @@ function* retweet(action) {
       data: result.data
     });
   } catch (e) {
-    // console.error(e);
+    console.error(e);
     yield put({
       type: RETWEET_FAILURE,
       error: e

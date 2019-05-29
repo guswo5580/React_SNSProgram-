@@ -8,7 +8,7 @@ import {
   SlickWrapper,
   ImgWrapper,
   Indicator
-} from "./style";
+} from "./styles/ImageZoomstyle";
 
 const ImagesZoom = ({ images, onClose }) => {
   const [currentSlide, setCurrentSlide] = useState(0);

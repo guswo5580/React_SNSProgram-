@@ -120,7 +120,7 @@ export default (state = initialState, action) => {
       case LOAD_MAIN_POSTS_REQUEST:
       case LOAD_HASHTAG_POSTS_REQUEST:
       case LOAD_USER_POSTS_REQUEST: {
-        draft.mainPosts = action.lastId === 0 ? [] : draft.mainPosts;
+        draft.mainPosts = !action.lastId ? [] : draft.mainPosts;
         //처음 게시글을 불러올 때는 빈 객체부터 시작
         //게시글을 이어서 받을 때는 기존 post를 유지한 채로
         draft.hasMorePost = action.lastId ? draft.hasMorePost : true;

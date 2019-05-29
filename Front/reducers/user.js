@@ -165,6 +165,7 @@ export default (state = initialState, action) => {
       }
       /////////////////////////////////
       case LOAD_FOLLOWERS_REQUEST: {
+        draft.followerList = !action.offset ? [] : draft.followerList;
         draft.hasMoreFollower = action.offset ? draft.hasMoreFollower : true;
         //처음 데이터를 가져올 때는 더보기 버튼을 보여주는 걸로
         //처음 action.offset === 0 (false) -> true가 반환!!!
@@ -188,6 +189,7 @@ export default (state = initialState, action) => {
       }
       /////////////////////////////////
       case LOAD_FOLLOWINGS_REQUEST: {
+        draft.followingList = !action.offset ? [] : draft.followingList;
         draft.hasMoreFollowing = action.offset ? draft.hasMoreFollowing : true; // 처음 데이터를 가져올 때는 더보기 버튼을 보여주는 걸로
         break;
       }

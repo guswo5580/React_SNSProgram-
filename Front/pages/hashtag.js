@@ -16,9 +16,10 @@ const Hashtag = ({ tag }) => {
       document.documentElement.scrollHeight - 300
     ) {
       if (hasMorePost) {
+        const lastId = mainPosts[mainPosts.length - 1].id;
         dispatch({
           type: LOAD_HASHTAG_POSTS_REQUEST,
-          lastId: mainPosts[mainPosts.length - 1].id,
+          lastId,
           data: tag
         });
       }
@@ -35,7 +36,7 @@ const Hashtag = ({ tag }) => {
   return (
     <div>
       {mainPosts.map(c => (
-        <PostCard key={+c.createdAt} post={c} />
+        <PostCard key={c.id} post={c} />
       ))}
     </div>
   );

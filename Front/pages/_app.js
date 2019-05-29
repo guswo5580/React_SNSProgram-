@@ -12,6 +12,19 @@ import reducer from "../reducers";
 import rootSaga from "../sagas";
 import { LOAD_USER_REQUEST } from "../reducers/user";
 
+///////_ 파일의 기본 구조 Class 형식의 extends가 필요//////////////
+// import App, { Container } from "next/app";
+// class PeaceOcean extends App {
+//   static getInitialProps(context){
+
+//   }
+//   render () {
+
+//   }
+//   공식적으로는 넣어야 맞지만 넣지 않아도 실행은 가능
+//   실행 여부에 따라 추가적인 사항
+// }
+
 const PeaceOcean = ({ Component, store, pageProps }) => (
   <Provider store={store}>
     <Helmet
@@ -108,7 +121,8 @@ PeaceOcean.getInitialProps = async context => {
 
   //_app.js 하위의 다른 컴포넌트에서 getInitialProps를 했을 경우 실행 구간
   if (Component.getInitialProps) {
-    pageProps = await Component.getInitialProps(ctx);
+    pageProps = (await Component.getInitialProps(ctx)) || {};
+    //pageProps.isRequired 문제를 위해 기본값을 지정
   }
   return { pageProps };
 };
