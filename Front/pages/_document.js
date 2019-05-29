@@ -6,7 +6,8 @@ import { ServerStyleSheet } from "styled-components";
 
 class MyDocument extends Document {
   static getInitialProps(context) {
-    const sheet = new ServerStyleSheet();
+    const sheet = new ServerStyleSheet(); //styled-components 역시 서버사이드 렌더링을 적용
+
     //renderPage를 App(_app.js)를 renderpage로 연결시켜 주어야 함!!
     const page = context.renderPage(App => props =>
       sheet.collectStyles(<App {...props} />)
@@ -24,6 +25,7 @@ class MyDocument extends Document {
       <html {...htmlAttrs}>
         <head>
           {this.props.styleTags}
+          {/* 선언한 styled-components를 head 안에 적용 */}
           {Object.values(helmet).map(el => el.toComponent())}
         </head>
         <body {...bodyAttrs}>
