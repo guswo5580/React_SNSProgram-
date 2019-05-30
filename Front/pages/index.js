@@ -25,7 +25,8 @@ const Home = () => {
     ) {
       if (hasMorePost) {
         //게시글이 남아 있다면
-        const lastId = mainPosts[mainPosts.length - 1].id;
+        const lastId =
+          mainPosts[mainPosts.length - 1] && mainPosts[mainPosts.length - 1].id;
         if (!countRef.current.includes(lastId)) {
           //countRef 배열 안에 lastId가 없으면 = 한 번도 실행되지 않았으면
           dispatch({

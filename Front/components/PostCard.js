@@ -1,39 +1,34 @@
-import React, { useCallback, useEffect, useState } from "react";
-import {
-  Avatar,
-  Button,
-  Card,
-  Comment,
-  Form,
-  Icon,
-  Input,
-  List,
-  Popover
-} from "antd";
+import React, { useCallback, useState, memo } from "react";
+import { Avatar, Button, Card, Comment, Icon, List, Popover } from "antd";
 import Link from "next/link";
 import PropTypes from "prop-types";
 import { useDispatch, useSelector } from "react-redux";
-
 import {
-  ADD_COMMENT_REQUEST,
   LIKE_POST_REQUEST,
   LOAD_COMMENTS_REQUEST,
-  UNLIKE_POST_REQUEST,
+  REMOVE_POST_REQUEST,
   RETWEET_REQUEST,
-  REMOVE_POST_REQUEST
+  UNLIKE_POST_REQUEST
 } from "../reducers/post";
+import PostImages from "../components/PostImages";
+import PostCardContent from "../components/PostCardContent";
 import { FOLLOW_USER_REQUEST, UNFOLLOW_USER_REQUEST } from "../reducers/user";
-import PostImages from "./PostImages";
-import PostCardContent from "./PostCardContent";
+import CommentForm from "./CommentForm";
+import styled from "styled-components";
+import FollowButton from "./FollowButton";
+
+const CardWrapper = styled.div`
+  margin-bottom: 20px;
+`;
+
 //게시글
-const PostCard = ({ post }) => {
+const PostCard = memo(({ post }) => {
   const [commentFormOpened, setCommentFormOpened] = useState(false);
-  const [commentText, setCommentText] = useState("");
-  const { me } = useSelector(state => state.user);
-  const { commentAdded, isAddingComment } = useSelector(state => state.post);
+  const id = useSelector(state => state.user.me && state.user.me.id);
+  //me의 모든 객체 내용을 가져오는 것보다 원하는 내용만 가져오는 것이 좋다
   const dispatch = useDispatch();
 
-  const liked = me && post.Likers && post.Likers.find(v => v.id === me.id);
+  const liked = id && post.Likers && post.Likers.find(v => v.id === id);
   //Liker 배열 안에 나의 id 가 있는지를 확인하여 게시글에 대한 좋아요 여부 확인
 
   const onToggleComment = useCallback(() => {
@@ -47,35 +42,9 @@ const PostCard = ({ post }) => {
     }
   }, []);
 
-  const onSubmitComment = useCallback(
-    e => {
-      e.preventDefault();
-      if (!me) {
-        return alert("로그인이 필요합니다.");
-      }
-      return dispatch({
-        type: ADD_COMMENT_REQUEST,
-        data: {
-          postId: post.id,
-          content: commentText
-        }
-      });
-    },
-    [me && me.id, commentText]
-  );
-
-  useEffect(() => {
-    setCommentText("");
-    //댓글 입력 완료가 확인될 때, 입력 창 초기화
-  }, [commentAdded === true]);
-
-  const onChangeCommentText = useCallback(e => {
-    setCommentText(e.target.value);
-  });
-
   const onToggleLike = useCallback(() => {
     //좋아요 버튼 Toogle
-    if (!me) {
+    if (!id) {
       return alert("로그인이 필요합니다!");
     }
     if (liked) {
@@ -91,17 +60,17 @@ const PostCard = ({ post }) => {
         data: post.id
       });
     }
-  }, [me && me.id, post && post.id, liked]);
+  }, [id, post && post.id, liked]);
 
   const onRetweet = useCallback(() => {
-    if (!me) {
+    if (!id) {
       return alert("로그인이 필요합니다");
     }
     return dispatch({
       type: RETWEET_REQUEST,
       data: post.id
     });
-  }, [me && me.id, post && post.id]);
+  }, [id, post && post.id]);
 
   const onFollow = useCallback(
     userId => () => {
@@ -131,7 +100,7 @@ const PostCard = ({ post }) => {
   });
 
   return (
-    <div>
+    <CardWrapper>
       <Card
         cover={
           post.Images && post.Images[0] && <PostImages images={post.Images} />
@@ -150,7 +119,7 @@ const PostCard = ({ post }) => {
             key="ellipsis"
             content={
               <Button.Group>
-                {me && post.UserId === me.id ? (
+                {id && post.UserId === id ? (
                   <>
                     <Button>수정</Button>
                     <Button type="danger" onClick={onRemovePost(post.id)}>
@@ -170,14 +139,11 @@ const PostCard = ({ post }) => {
           post.RetweetId ? `${post.User.nickname}님이 리트윗 하였습니다` : null
         }
         extra={
-          //내 게시글일 경우 - null
-          //내 Following 목록에 있을 경우 취소
-          !me || post.User.id === me.id ? null : me.Followings &&
-            me.Followings.find(v => v.id === post.User.id) ? (
-            <Button onClick={onUnfollow(post.User.id)}>팔로우 취소</Button>
-          ) : (
-            <Button onClick={onFollow(post.User.id)}>팔로우</Button>
-          )
+          <FollowButton
+            post={post}
+            onUnfollow={onUnfollow}
+            onFollow={onFollow}
+          />
         }
       >
         {post.RetweetId && post.Retweet ? (
@@ -226,18 +192,7 @@ const PostCard = ({ post }) => {
       </Card>
       {commentFormOpened && (
         <>
-          <Form onSubmit={onSubmitComment}>
-            <Form.Item>
-              <Input.TextArea
-                rows={4}
-                value={commentText}
-                onChange={onChangeCommentText}
-              />{" "}
-            </Form.Item>{" "}
-            <Button type="primary" htmlType="submit" loading={isAddingComment}>
-              보내기{" "}
-            </Button>{" "}
-          </Form>{" "}
+          <CommentForm post={post} />
           <List
             header={`${post.Comments ? post.Comments.length : 0} 댓글`}
             itemLayout="horizontal"
@@ -260,12 +215,14 @@ const PostCard = ({ post }) => {
                 />
               </li>
             )}
-          />{" "}
+          />
         </>
-      )}{" "}
-    </div>
+      )}
+    </CardWrapper>
   );
-};
+});
+
+PostCard.displayName = "PostCard";
 
 //PropType을 Object 변수에 이용할 때
 PostCard.propTypes = {

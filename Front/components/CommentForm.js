@@ -1,0 +1,59 @@
+import { Button, Form, Input } from "antd";
+import React, { useCallback, useEffect, useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import PropTypes from "prop-types";
+import { ADD_COMMENT_REQUEST } from "../reducers/post";
+
+//댓글 입력 시 발생하는 최적화 문제를 위한 분리 컴포넌트
+const CommentForm = ({ post }) => {
+  const [commentText, setCommentText] = useState("");
+  const { commentAdded, isAddingComment } = useSelector(state => state.post);
+  const { me } = useSelector(state => state.user);
+  const dispatch = useDispatch();
+
+  const onSubmitComment = useCallback(
+    e => {
+      e.preventDefault();
+      if (!me) {
+        return alert("로그인이 필요합니다.");
+      }
+      return dispatch({
+        type: ADD_COMMENT_REQUEST,
+        data: {
+          postId: post.id,
+          content: commentText
+        }
+      });
+    },
+    [me && me.id, commentText]
+  );
+
+  useEffect(() => {
+    setCommentText("");
+  }, [commentAdded === true]);
+
+  const onChangeCommentText = useCallback(e => {
+    setCommentText(e.target.value);
+  }, []);
+
+  return (
+    <Form onSubmit={onSubmitComment}>
+      <Form.Item>
+        <Input.TextArea
+          rows={4}
+          value={commentText}
+          onChange={onChangeCommentText}
+        />
+      </Form.Item>
+      <Button type="primary" htmlType="submit" loading={isAddingComment}>
+        보내기
+      </Button>
+    </Form>
+  );
+};
+
+CommentForm.propTypes = {
+  post: PropTypes.object.isRequired
+};
+
+export default CommentForm;

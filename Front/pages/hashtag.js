@@ -16,7 +16,8 @@ const Hashtag = ({ tag }) => {
       document.documentElement.scrollHeight - 300
     ) {
       if (hasMorePost) {
-        const lastId = mainPosts[mainPosts.length - 1].id;
+        const lastId =
+          mainPosts[mainPosts.length - 1] && mainPosts[mainPosts.length - 1].id;
         dispatch({
           type: LOAD_HASHTAG_POSTS_REQUEST,
           lastId,

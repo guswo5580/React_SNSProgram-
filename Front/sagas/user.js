@@ -103,6 +103,8 @@ function* logOut() {
       // put은 dispatch 동일
       type: LOG_OUT_SUCCESS
     });
+    alert("로그인이 종료되었습니다. 기본화면으로 돌아갑니다");
+    Router.push("/");
   } catch (e) {
     // loginAPI 실패
     console.error(e);
