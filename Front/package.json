@@ -5,19 +5,24 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon",
-    "build": "next build",
-    "start": "next start"
+    "build": "cross-env BUNDLE_ANALYE=both next build",
+    "prestart": "npm run build",
+    "start": "cross-env NODE_ENV=production next start"
   },
   "author": "HJ",
   "license": "ISC",
   "dependencies": {
+    "@zeit/next-bundle-analyzer": "^0.1.2",
     "antd": "^3.16.6",
     "axios": "^0.18.0",
+    "compression-webpack-plugin": "^2.0.0",
     "cookie-parser": "^1.4.4",
+    "cross-env": "^5.2.0",
     "dotenv": "^8.0.0",
     "express": "^4.17.0",
     "express-session": "^1.16.1",
     "immer": "^3.1.2",
+    "moment": "^2.24.0",
     "morgan": "^1.9.1",
     "next": "^8.1.0",
     "next-redux-saga": "^4.0.2",
@@ -29,7 +34,8 @@
     "react-redux": "^7.1.0-alpha.4",
     "redux": "^4.0.1",
     "redux-saga": "^1.0.2",
-    "styled-components": "^4.2.0"
+    "styled-components": "^4.2.0",
+    "webpack-ant-icon-loader": "^1.0.5"
   },
   "devDependencies": {
     "eslint": "^5.16.0",
