@@ -52,9 +52,10 @@ function* login(action) {
     });
   } catch (error) {
     //loginAPI 실패 시 실행
-    console.error(error);
+    // console.dir(error) 에러 객체 보기
     yield put({
-      type: LOG_IN_FAILURE
+      type: LOG_IN_FAILURE,
+      reason: error.response && error.response.data
     });
   }
 }

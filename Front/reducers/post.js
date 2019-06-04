@@ -172,7 +172,9 @@ export default (state = initialState, action) => {
         const postIndex = draft.mainPosts.findIndex(
           v => v.id === action.data.postId
         );
-        draft.mainPosts[postIndex].Likers.unshift({ id: action.data.userId });
+        draft.mainPosts[postIndex].Likers.unshift({
+          id: action.data.userId
+        });
         break;
       }
       case LIKE_POST_FAILURE: {

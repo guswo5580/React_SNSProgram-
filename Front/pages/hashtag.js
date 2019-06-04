@@ -36,15 +36,17 @@ const Hashtag = ({ tag }) => {
 
   return (
     <div>
+      {" "}
       {mainPosts.map(c => (
         <PostCard key={c.id} post={c} />
-      ))}
+      ))}{" "}
     </div>
   );
 };
 Hashtag.propTypes = {
   tag: PropTypes.string.isRequired
 };
+
 //Hashtag = _app.js 의 context 내부의 Component로 전달됨!!
 //context = _app.js 의 ctx
 Hashtag.getInitialProps = async context => {
@@ -55,7 +57,9 @@ Hashtag.getInitialProps = async context => {
     type: LOAD_HASHTAG_POSTS_REQUEST,
     data: tag
   });
-  return { tag };
+  return {
+    tag
+  };
 };
 //getInitialProps = 라이프 사이클의 일종
 //다른 어떤 사이클 보다 먼저 실행되고, 프론트&서버에서도 사용 가능

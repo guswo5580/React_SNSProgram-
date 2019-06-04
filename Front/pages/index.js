@@ -26,9 +26,10 @@ const Home = () => {
       if (hasMorePost) {
         //게시글이 남아 있다면
         const lastId =
-          mainPosts[mainPosts.length - 1] && mainPosts[mainPosts.length - 1].id;
+          mainPosts[mainPosts.length - 1] && mainPosts[mainPosts.length - 1].id; //보호 연산자 적용
         if (!countRef.current.includes(lastId)) {
-          //countRef 배열 안에 lastId가 없으면 = 한 번도 실행되지 않았으면
+          //countRef 배열 안에 lastId(10)가 있다면 요청을 보내지 않겠다
+          //같은 lastId를 이용하는 요청은 Front에서 실행하지 않도록 하겠다
           dispatch({
             //더 불러올 게시글이 있다면
             type: LOAD_MAIN_POSTS_REQUEST,
@@ -37,7 +38,7 @@ const Home = () => {
             //다음 게시글 요청의 기준점으로 잡는다
           });
           countRef.current.push(lastId);
-          //lastId가 몇 번 호출되었는가 횟수를 저장
+          //lastId 현재의 lastId 값을 저장 ex. 10
         }
       }
     }
@@ -52,11 +53,12 @@ const Home = () => {
 
   return (
     <div>
-      {/* 로그인 정보가 없어도 게시글은 볼 수 있도록, 게시글은 올릴 수 없도록  */}
-      {me && <PostForm />}
+      {" "}
+      {/* 로그인 정보가 없어도 게시글은 볼 수 있도록, 게시글은 올릴 수 없도록  */}{" "}
+      {me && <PostForm />}{" "}
       {mainPosts.map(c => {
         return <PostCard key={c.id} post={c} />;
-      })}
+      })}{" "}
     </div>
   );
 };

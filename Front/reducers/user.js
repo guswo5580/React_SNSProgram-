@@ -120,7 +120,7 @@ export default (state = initialState, action) => {
           draft.me = action.data;
           break;
         }
-        draft.useInfo = action.data;
+        draft.userInfo = action.data;
         break;
       }
       case LOAD_USER_FAILURE: {
@@ -131,7 +131,9 @@ export default (state = initialState, action) => {
         break;
       }
       case FOLLOW_USER_SUCCESS: {
-        draft.me.Followings.unshift({ id: action.data });
+        draft.me.Followings.unshift({
+          id: action.data
+        });
         break;
       }
       case FOLLOW_USER_FAILURE: {
@@ -153,7 +155,9 @@ export default (state = initialState, action) => {
       }
       /////////////////////////////////
       case ADD_POST_TO_ME: {
-        draft.me.Posts.unshift({ id: action.data });
+        draft.me.Posts.unshift({
+          id: action.data
+        });
         //post에서 변화가 일어났을 때
         //user의 정보에서도 새로운 게시글의 id를 추가
         break;

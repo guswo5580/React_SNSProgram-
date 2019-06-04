@@ -100,7 +100,9 @@ function* watchLoadMainPosts() {
 function addCommentAPI(data) {
   return axios.post(
     `/post/${data.postId}/comment`,
-    { content: data.content },
+    {
+      content: data.content
+    },
     {
       withCredentials: true
     }

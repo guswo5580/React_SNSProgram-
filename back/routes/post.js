@@ -1,9 +1,13 @@
 const express = require('express');
 const multer = require('multer');
 const path = require('path');
-
+const {
+  isPosts
+} = require('./middleware');
 const db = require('../models');
-const { isLoggedIn } = require('./middleware');
+const {
+  isLoggedIn
+} = require('./middleware');
 
 const router = express.Router();
 
@@ -21,14 +25,18 @@ const upload = multer({
       //basename + 시간 값 + 확장자 -- file명이 같은 것을 방지!! 
     },
   }),
-  limits: { fileSize: 20 * 1024 * 1024 }, //파일 사이즈 제한 옵션(byte 단위)
+  limits: {
+    fileSize: 20 * 1024 * 1024
+  }, //파일 사이즈 제한 옵션(byte 단위)
 });
 
 //게시글 하나 불러오기
 router.get('/:id', async (req, res, next) => {
   try {
     const post = await db.Post.findOne({
-      where: { id: req.params.id },
+      where: {
+        id: req.params.id
+      },
       include: [{
         model: db.User,
         attributes: ['id', 'nickname'],
@@ -49,42 +57,50 @@ router.post('/', isLoggedIn, upload.none(), async (req, res, next) => { // POST 
   try {
     const hashtags = req.body.content.match(/#[^\s]+/g); //#뒤의 글자 추출
     const newPost = await db.Post.create({
-      content: req.body.content, 
+      content: req.body.content,
       UserId: req.user.id,
     });
     if (hashtags) {
       const result = await Promise.all(hashtags.map(tag => db.Hashtag.findOrCreate({
         //없으면 만들고, 있으면 아무 일 X
-        where: { name: tag.slice(1).toLowerCase() },
+        where: {
+          name: tag.slice(1).toLowerCase()
+        },
       })));
       //Post ~ Hashtag와 관계 설정
       await newPost.addHashtags(result.map(r => r[0]));
     }
-    
-    if (req.body.image) { 
+
+    if (req.body.image) {
       if (Array.isArray(req.body.image)) {
         //이미지 주소가 여러 개 일 때, --- 배열 형식
         const images = await Promise.all(req.body.image.map((image) => {
           //배열을 map으로 나누어 쿼리 작업 후 Promise.all을 하면 한방에 처리 가능!! 
-          return db.Image.create({ src: image });
+          return db.Image.create({
+            src: image
+          });
         }));
 
         await newPost.addImages(images);
-      } else { 
+      } else {
         //이미지 주소가 하나일 때 --- 배열 X 
-        const image = await db.Image.create({ src: req.body.image });
+        const image = await db.Image.create({
+          src: req.body.image
+        });
         await newPost.addImage(image);
       }
     }
-    
+
     // 시퀄라이즈에서 제공하는 방식을 이용하여 합쳐 보내기
     // const User = await newPost.getUser();
     // newPost.User = User;
     // res.json(newPost);
-    
+
     //다시 한번 DB조회를 통해 합쳐 보내기 
     const fullPost = await db.Post.findOne({
-      where: { id: newPost.id },
+      where: {
+        id: newPost.id
+      },
       include: [{
         model: db.User,
       }, {
@@ -99,17 +115,23 @@ router.post('/', isLoggedIn, upload.none(), async (req, res, next) => { // POST 
 });
 
 //댓글 가져오기
-router.get('/:id/comments', async (req, res, next) => {
+router.get('/:id/comments', isPosts, async (req, res, next) => {
   try {
-    const post = await db.Post.findOne({ where: { id: req.params.id } });
-    if (!post) {
-      return res.status(404).send('포스트가 존재하지 않습니다.');
-    }
+    const post = await db.Post.findOne({
+      where: {
+        id: req.params.id
+      }
+    });
+    // if (!post) {
+    //   return res.status(404).send('포스트가 존재하지 않습니다.');
+    // }
     const comments = await db.Comment.findAll({
       where: {
         PostId: req.params.id,
       },
-      order: [['createdAt', 'ASC']],
+      order: [
+        ['createdAt', 'ASC']
+      ],
       include: [{
         model: db.User,
         attributes: ['id', 'nickname'],
@@ -123,19 +145,17 @@ router.get('/:id/comments', async (req, res, next) => {
 });
 
 //댓글 작성하기
-router.post('/:id/comment', isLoggedIn,  async (req, res, next) => { // POST /api/post/1000000/comment
+router.post('/:id/comment', isLoggedIn, isPosts, async (req, res, next) => { 
   try {
-    const post = await db.Post.findOne({ where: { id: req.params.id } });
-    if (!post) {
-      return res.status(404).send('포스트가 존재하지 않습니다.');
-    }
+    const post = req.data;
+
     //새로운 댓글 저장
     const newComment = await db.Comment.create({
       PostId: post.id,
       UserId: req.user.id,
       content: req.body.content,
     });
-    await post.addComment(newComment.id);//관계 설정
+    await post.addComment(newComment.id); //관계 설정
     //관계 설정된 것을 include 포함 재조회
     const comment = await db.Comment.findOne({
       where: {
@@ -161,13 +181,13 @@ router.post('/images', upload.array('image'), (req, res) => {
   res.json(req.files.map(v => v.filename));
 });
 
-router.delete('/:id', isLoggedIn, async (req, res, next) => {
+router.delete('/:id', isLoggedIn, isPosts, async (req, res, next) => {
   try {
-    const post = await db.Post.findOne({ where: { id: req.params.id } });
-    if (!post) {
-      return res.status(404).send('포스트가 존재하지 않습니다.');
-    }
-    await db.Post.destroy({ where: { id: req.params.id } });
+    await db.Post.destroy({
+      where: {
+        id: req.params.id
+      }
+    });
     res.send(req.params.id);
   } catch (e) {
     console.error(e);
@@ -175,28 +195,28 @@ router.delete('/:id', isLoggedIn, async (req, res, next) => {
   }
 });
 
-router.post('/:id/like', isLoggedIn, async (req, res, next) => {
+router.post('/:id/like', isLoggedIn, isPosts, async (req, res, next) => {
   try {
-    const post = await db.Post.findOne({ where: { id: req.params.id }});
-    if (!post) {
-      return res.status(404).send('포스트가 존재하지 않습니다.');
-    }
+    const post = req.data;
+
     await post.addLiker(req.user.id);
-    res.json({ userId: req.user.id });
+    res.json({
+      userId: req.user.id
+    });
   } catch (e) {
     console.error(e);
     next(e);
   }
 });
 
-router.delete('/:id/like', isLoggedIn, async (req, res, next) => {
+router.delete('/:id/like', isLoggedIn, isPosts, async (req, res, next) => {
   try {
-    const post = await db.Post.findOne({ where: { id: req.params.id }});
-    if (!post) {
-      return res.status(404).send('포스트가 존재하지 않습니다.');
-    }
+    const post = req.data;
+
     await post.removeLiker(req.user.id);
-    res.json({ userId: req.user.id });
+    res.json({
+      userId: req.user.id
+    });
   } catch (e) {
     console.error(e);
     next(e);
@@ -206,7 +226,9 @@ router.delete('/:id/like', isLoggedIn, async (req, res, next) => {
 router.post('/:id/retweet', isLoggedIn, async (req, res, next) => {
   try {
     const post = await db.Post.findOne({
-      where: { id: req.params.id },
+      where: {
+        id: req.params.id
+      },
       include: [{
         model: db.Post,
         as: 'Retweet',
@@ -233,11 +255,14 @@ router.post('/:id/retweet', isLoggedIn, async (req, res, next) => {
       UserId: req.user.id,
       RetweetId: retweetTargetId,
       content: '원본 게시글이 삭제되었습니다',
+      //원본 게시글이 삭제되어야만 content가 드러남!! 
     });
-    
+
     //리트윗을 한 게시글에 이미 저정되어 있는 글의 정보를 가져옴
     const retweetWithPrevPost = await db.Post.findOne({
-      where: { id: retweet.id },
+      where: {
+        id: retweet.id
+      },
       include: [{
         model: db.User,
         attributes: ['id', 'nickname'],

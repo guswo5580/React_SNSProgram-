@@ -12,7 +12,7 @@ import reducer from "../reducers";
 import rootSaga from "../sagas";
 import { LOAD_USER_REQUEST } from "../reducers/user";
 
-///////_ 파일의 기본 구조 Class 형식의 extends가 필요//////////////
+///////_ 파일의 기본 구조 Class 형식의 extends가 필요한 경우도 존재//////////////
 // import App, { Container } from "next/app";
 // class PeaceOcean extends App {
 //   static getInitialProps(context){
@@ -28,8 +28,11 @@ import { LOAD_USER_REQUEST } from "../reducers/user";
 const PeaceOcean = ({ Component, store, pageProps }) => (
   <Provider store={store}>
     <Helmet
+      // Helmet으로 검색엔진에 노출할 수 있도록 페이지 정의!!
       title="PeaceOcean"
-      htmlAttributes={{ lang: "ko" }}
+      htmlAttributes={{
+        lang: "ko"
+      }}
       meta={[
         {
           charset: "UTF-8"
@@ -58,8 +61,15 @@ const PeaceOcean = ({ Component, store, pageProps }) => (
         {
           property: "og:type",
           content: "website"
+        },
+        {
+          property: "og:image",
+          content: "http://localhost:3060/favicon.ico"
+          //검색엔진 노출 시, 첫 번째 이미지를 보여주기로 설정
+          //이미지가 없을 경우, favicon을 기본이미지로 하여 보여주기
         }
       ]}
+      // link 및 script 는 객체 배열로 적용
       link={[
         {
           rel: "shortcut icon",
@@ -85,10 +95,10 @@ const PeaceOcean = ({ Component, store, pageProps }) => (
           src: "https://cdnjs.cloudflare.com/ajax/libs/antd/3.16.2/antd.js"
         }
       ]}
-    />
+    />{" "}
     <AppLayout>
-      <Component {...pageProps} />
-    </AppLayout>
+      <Component {...pageProps} />{" "}
+    </AppLayout>{" "}
   </Provider>
 );
 PeaceOcean.propTypes = {
@@ -124,7 +134,9 @@ PeaceOcean.getInitialProps = async context => {
     pageProps = (await Component.getInitialProps(ctx)) || {};
     //pageProps.isRequired 문제를 위해 기본값을 지정
   }
-  return { pageProps };
+  return {
+    pageProps
+  };
 };
 
 // 커스텀 미들웨어 생성 예시

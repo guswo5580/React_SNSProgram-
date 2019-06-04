@@ -1,5 +1,7 @@
 //Next 설정 변경 파일!!!
-const withBundleAnalyzer = require("@zeit/next-bundle-analyzer");
+const withBundleAnalyzer = require("@next/bundle-analyzer")({
+  enabled: process.env.ANALYZE === "true"
+});
 //웹펙 번들링 과정 체킹
 const webpack = require("webpack");
 const CompressionPlugin = require("compression-webpack-plugin");
@@ -8,22 +10,24 @@ const CompressionPlugin = require("compression-webpack-plugin");
 
 module.exports = withBundleAnalyzer({
   distDir: ".next",
-  //공식문서의 내용 덮어쓰기
-  analyzeServer: ["server", "both"].includes(process.env.BUNDLE_ANALYZE),
-  analyzeBrowser: ["browser", "both"].includes(process.env.BUNDLE_ANALYZE),
-  //client , server 두개의 파일 생성
-  //html 파일을 통해 각 코드의 용량(parsing 전 후)을 체크 가능
-  //bundle 하나하나가 1메가를 넘지 않도록... 넘으면 코드 스플리팅...
-  bundleAnalyzerConfig: {
-    server: {
-      analyzerMode: "static",
-      reportFilename: "../bundles/server.html"
-    },
-    browser: {
-      analyzerMode: "static",
-      reportFilename: "../bundles/client.html"
-    }
-  },
+
+  // 공식문서의 내용 덮어쓰기
+  // @zeit/bundle-analyzer -> @next/bundle-analyzer로 변경!! 설정이 알아서 작동
+  // analyzeServer: ["server", "both"].includes(process.env.BUNDLE_ANALYZE),
+  // analyzeBrowser: ["browser", "both"].includes(process.env.BUNDLE_ANALYZE),
+  // client , server 두개의 파일 생성
+  // html 파일을 통해 각 코드의 용량(parsing 전 후)을 체크 가능
+  // bundle 하나하나가 1메가를 넘지 않도록... 넘으면 코드 스플리팅...
+  // bundleAnalyzerConfig: {
+  //   server: {
+  //     analyzerMode: "static",
+  //     reportFilename: "../bundles/server.html"
+  //   },
+  //   browser: {
+  //     analyzerMode: "static",
+  //     reportFilename: "../bundles/client.html"
+  //   }
+  // },
 
   webpack(config) {
     //기본 next의 webpack 설정에 덧붙여서 업데이트

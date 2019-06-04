@@ -3,6 +3,11 @@ import { Button, Checkbox, Form, Input } from "antd";
 import { useDispatch, useSelector } from "react-redux";
 import Router from "next/router";
 import { SIGN_UP_REQUEST } from "../reducers/user";
+import styled from "styled-components";
+
+const SignupError = styled.div`
+  color: red;
+`;
 
 //onChange 부분에 useCallback을 사용했어도
 //id input 에서 작성 -> 전체 form이 rerendering
@@ -138,7 +143,7 @@ const Signup = () => {
           <Checkbox name="user-term" value={term} onChange={onChangeTerm}>
             깨끗하게 이용할 것에 동의 합니다
           </Checkbox>
-          {termError && <div style={{ color: "red" }}>동의하셔야 합니다</div>}
+          {termError && <SignupError>동의하셔야 합니다</SignupError>}
         </div>
         <div style={{ marginTop: 10 }}>
           <Button type="primary" htmlType="submit" loading={isSigningUp}>
