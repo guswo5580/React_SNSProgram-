@@ -1,0 +1,18 @@
+//React 환경 개발 시 eslint 설정
+{
+  "parserOptions": {
+    "ecmaVersion": 2018,
+    "sourceType": "module", //script, module 시스템 설정
+    "ecmaFeatures": {
+      //React 사용 가능 설정
+      "jsx": true
+    }
+  },
+  "env": {
+    "browser": true,
+    "node": true
+  },
+  "extends": ["eslint:recommended", "plugin:react/recommended"],
+  //플러그인의 경우 설치 필수 - 개발환경으로 설치
+  "plugins": ["import", "react-hooks"]
+}
